@@ -1,6 +1,6 @@
 # streaming/forms.py
 from django import forms
-from myapp.streaming.models import StreamingMovie
+from .models import StreamingMovie
 
 class StreamingMovieForm(forms.ModelForm):
     genre = forms.MultipleChoiceField(
