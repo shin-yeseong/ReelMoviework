@@ -3,11 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Upload Movie</title>
 </head>
 <body>
-  <div>
-    <h1>안녕 세상아!</h1>
-  </div>
+    <h1>Upload a Movie</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required><br><br>
+
+        <label for="release_date">Release Date:</label>
+        <input type="date" id="release_date" name="release_date" required><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required><br><br>
+
+        <label for="movie_file">Select Movie File:</label>
+        <input type="file" id="movie_file" name="movie_file" accept="video/mp4" required><br><br>
+
+        <button type="submit">Upload Movie</button>
+    </form>
 </body>
 </html>

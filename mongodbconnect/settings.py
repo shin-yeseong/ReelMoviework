@@ -80,7 +80,7 @@ DATABASES = {
             'NAME': 'mongodatabase',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': 'mongodb+srv://jklas187:<password>@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority&appName=LikeMovie'
+                'host': 'mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority&appName=LikeMovie'
             }
         }
 }
