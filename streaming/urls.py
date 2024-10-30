@@ -1,6 +1,6 @@
 # streaming/urls.py
 from django.urls import path
-from . import views
+from myapp.streaming import views
 
 app_name = 'streaming'
 
