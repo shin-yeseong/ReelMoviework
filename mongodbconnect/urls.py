@@ -14,10 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# mongodbconnect/urls.py
 from django.contrib import admin
 from django.urls import path, include
+from main_page.views import home  # 홈 페이지 뷰 임포트 (myapp을 실제 앱 이름으로 대체)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('myapp.urls')),
+    path('streaming/', include('streaming.urls')),
+    path('funding/', include('funding.urls')),
+    path('', home, name='home'),  # 루트 URL
 ]

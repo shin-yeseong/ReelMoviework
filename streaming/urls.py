@@ -5,5 +5,6 @@ from . import views
 app_name = 'streaming'
 
 urlpatterns = [
-    path('<int:movie_id>/', views.streaming_detail, name='streaming_detail'),
+    path('api/movies/', views.StreamingMovieList.as_view(), name='movie-list'),
+    path('api/movies/<int:movie_id>/stream/', views.StreamVideo.as_view(), name='movie-stream'),
 ]
