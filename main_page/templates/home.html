@@ -5,9 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        .button {
+            padding: 15px 25px;
+            font-size: 16px;
+            margin: 10px;
+            color: #fff;
+            background-color: #f04a00;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #f04a00;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Movie Streaming & Funding Site</h1>
-    <p>This is the homepage for the project.</p>
+    <div class="container">
+        <h1>Welcome to the Movie Platform</h1>
+        <a href="{% url 'funding_movie_page' %}" class="button">REEL</a>
+        <a href="{% url 'streaming_movie_page' %}" class="button">VISION</a>
+    </div>
 </body>
 </html>

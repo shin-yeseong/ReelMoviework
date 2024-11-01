@@ -6,6 +6,9 @@ from django.http import StreamingHttpResponse, Http404
 from .models import StreamingMovie
 from .serializers import StreamingMovieSerializer
 import mimetypes
+from django.shortcuts import render, redirect
+from .forms import StreamingMovieForm
+from django.contrib.auth.decorators import login_required
 
 
 class StreamingMovieList(APIView):
@@ -34,3 +37,18 @@ class StreamVideo(APIView):
         response['Content-Length'] = movie.streaming_url.size
         response['Content-Disposition'] = f'inline; filename="{movie.title}.mp4"'
         return response
+
+# streaming/views.py
+
+# @login_required
+def upload_streaming_movie(request):
+    if request.method == 'POST':
+        form = StreamingMovieForm(request.POST, request.FILES)
+        if form.is_valid():
+            movie = form.save(commit=False)
+            movie.creator = request.user
+            movie.save()
+            return redirect('streaming:streaming_movie_page')
+    else:
+        form = StreamingMovieForm()
+    return render(request, 'upload_streaming.html', {'form': form})

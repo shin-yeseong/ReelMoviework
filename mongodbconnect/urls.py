@@ -17,11 +17,13 @@ Including another URLconf
 # mongodbconnect/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from main_page.views import home  # 홈 페이지 뷰 임포트 (myapp을 실제 앱 이름으로 대체)
+from main_page.views import home, funding_movie_page, streaming_movie_page  # 필요한 뷰 임포트
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('streaming/', include('streaming.urls')),
     path('funding/', include('funding.urls')),
-    path('', home, name='home'),  # 루트 URL
+    path('', home, name='home'),  # 메인 페이지 URL
+    path('funding-page/', funding_movie_page, name='funding_movie_page'),  # 펀딩 영화 페이지 URL
+    path('streaming-page/', streaming_movie_page, name='streaming_movie_page'),  # 스트리밍 영화 페이지 URL
 ]

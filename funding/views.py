@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import FundingMovie
 from .forms import FundingMovieForm
 
-@login_required
+# @login_required
 def upload_funding_movie(request):
     if request.method == 'POST':
         form = FundingMovieForm(request.POST)
@@ -20,3 +20,4 @@ def upload_funding_movie(request):
 def funding_detail(request, movie_id):
     movie = get_object_or_404(FundingMovie, id=movie_id)
     return render(request, 'funding_detail.html', {'movie': movie})
+
