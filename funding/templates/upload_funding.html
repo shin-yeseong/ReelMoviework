@@ -15,7 +15,7 @@
             padding: 0;
             background-color: #141414;
             color: white;
-            font-family: 'Poppins', sans-serif; /* 폰트 변경 */
+            font-family: 'Poppins', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,7 +129,9 @@
 <body>
     <div class="container">
         <h1>Upload Movie Project</h1>
-        <form action="/upload" method="POST" enctype="multipart/form-data">
+        <!-- action URL을 Django URL 네임스페이스로 수정 -->
+        <form action="{% url 'funding:upload_funding_movie' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
 
