@@ -9,6 +9,9 @@ import mimetypes
 from django.shortcuts import render, redirect
 from .forms import StreamingMovieForm
 from django.contrib.auth.decorators import login_required
+import uuid
+import datetime
+from mongodbconnect import settings
 
 
 class StreamingMovieList(APIView):
@@ -45,9 +48,22 @@ def upload_streaming_movie(request):
     if request.method == 'POST':
         form = StreamingMovieForm(request.POST, request.FILES)
         if form.is_valid():
-            movie = form.save(commit=False)
-            movie.creator = request.user
-            movie.save()
+            movie_data = {
+                "_id": str(uuid.uuid4()),  # 고유 ID 생성
+                "title": form.cleaned_data['title'],
+                "genre": form.cleaned_data['genre'],
+                "time": form.cleaned_data['time'],
+                "summary": form.cleaned_data['summary'],
+                "creator_id": str(request.user.id),  # 로그인한 사용자의 ID 저장
+                "release_date": form.cleaned_data['release_date'],
+                "streaming_url": form.cleaned_data['streaming_url'],
+                "views": 0,
+                "payment_history": [],
+                "viewer": []
+            }
+
+            # MongoDB에 저장
+            settings.mongo_db.streaming_movies.insert_one(movie_data)
             return redirect('streaming:streaming_movie_page')
     else:
         form = StreamingMovieForm()

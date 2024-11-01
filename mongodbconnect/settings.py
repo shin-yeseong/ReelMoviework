@@ -129,3 +129,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# settings.py
+import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+load_dotenv()  # .env 파일 로드
+
+# MongoDB 연결 설정
+MONGO_DB_URL = os.getenv('MONGO_DB_URL')
+MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
+
+# MongoDB 클라이언트 생성
+client = MongoClient(MONGO_DB_URL)
+mongo_db = client[MONGO_DB_NAME]
