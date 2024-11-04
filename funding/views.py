@@ -40,7 +40,7 @@ def upload_funding_movie(request):
             create_date_datetime = datetime.now()
 
             funding_data = {
-                "_id": str(uuid.uuid4()),  # 고유 ID 생성
+                "f_id": str(uuid.uuid4()),  # 고유 ID 생성
                 "title": form.cleaned_data['title'],
                 "genre": form.cleaned_data['genre'],
                 "time": form.cleaned_data['time'],
