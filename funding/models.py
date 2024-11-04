@@ -1,8 +1,10 @@
 # funding/models.py
 from django.db import models
 from django.contrib.auth.models import User
+from bson import ObjectId  # MongoDB ObjectId를 사용하기 위해 import
 
 class FundingMovie(models.Model):
+    _id = models.CharField(primary_key=True, max_length=100, default=str(ObjectId()))  # 고유한 _id 필드 사용
     title = models.CharField(max_length=100)
     genre = models.JSONField()  # 배열 형태로 저장
     time = models.PositiveIntegerField()  # 영화 시간 (분 단위)
