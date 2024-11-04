@@ -109,7 +109,10 @@
 <body>
     <div class="container">
         <h1>Upload Movie</h1>
-        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <!-- templates/streaming/upload_streaming.html -->
+        <!-- action URL을 Django URL 네임스페이스로 수정 -->
+        <form action="{% url 'streaming:upload_streaming_movie' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
 
