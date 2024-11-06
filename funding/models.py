@@ -18,6 +18,8 @@ class FundingMovie(models.Model):
     total_funding_amount = models.PositiveIntegerField(default=0)
     backers = models.JSONField(default=list)  # 후원자 정보 배열
     payment_history = models.JSONField(default=list)  # 결제 내역 배열
+    movie_file_id = models.CharField(max_length=255, blank=True, null=True)  # 동영상 파일 ID
+    poster_file_id = models.CharField(max_length=255, blank=True, null=True)  # 포스터 이미지 파일 ID
 
     def __str__(self):
         return self.title
