@@ -1,4 +1,6 @@
 # funding/views.py
+from logging import exception
+from bson import ObjectId
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, time
@@ -10,13 +12,17 @@ from datetime import datetime
 from mongodbconnect import settings
 from pymongo import MongoClient
 import gridfs
+from django.http import HttpResponse
+
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
 client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
 db = client_mongo['mongodatabase']  # 데이터베이스 선택
 collection = db['funding_fundingmovie']  # 컬렉션 선택
-fs = gridfs.GridFS(db)
+# MongoDB 클라이언트 및 GridFS 설정
+movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
+poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
 # @login_required
 def upload_funding_movie(request):
@@ -63,23 +69,34 @@ def upload_funding_movie(request):
             movie_file = request.FILES.get('movie_file')
             if movie_file:
                 try:
-                    file_id = fs.put(movie_file, filename=movie_file.name)  # GridFS에 파일 저장
+                    file_id = movie_fs.put(movie_file, filename=movie_file.name)  # GridFS에 파일 저장
                     funding_data['movie_file_id'] = file_id  # 파일 ID를 데이터에 추가
                     print("파일이 GridFS에 저장되었습니다.")
                 except Exception as e:
                     print("GridFS 파일 저장 중 오류 발생:", e)
                     return render(request, 'upload_funding.html', {'form': form, 'error': '파일 저장 중 오류가 발생했습니다.'})
 
-                # MongoDB에 데이터 저장
+            # GridFS에 포스터 이미지 파일 저장
+            poster_image = request.FILES.get('poster_file')
+            if poster_image:
                 try:
-                    collection.insert_one(funding_data)
-                    print("MongoDB 저장 완료")
-                    return redirect('funding:upload_success')
+                    poster_id = poster_fs.put(poster_image, filename=poster_image.name)  # GridFS에 이미지 파일 저장
+                    funding_data['poster_image_id'] = poster_id  # 이미지 파일 ID 추가
+                    print("포스터 이미지 파일이 GridFS에 저장되었습니다.")
                 except Exception as e:
-                    print("MongoDB 데이터 저장 중 오류 발생:", e)
-                    return render(request, 'upload_success.html', {'form': form, 'error': '데이터 저장 중 오류가 발생했습니다.'})
-            else:
-                print("폼 유효성 검사 실패:", form.errors)
+                    print("GridFS 이미지 파일 저장 중 오류 발생:", e)
+                    return render(request, 'upload_funding.html',
+                                  {'form': form, 'error': '이미지 파일 저장 중 오류가 발생했습니다.'})
+            # MongoDB에 데이터 저장
+            try:
+                collection.insert_one(funding_data)
+                print("MongoDB 저장 완료")
+                return redirect('funding:upload_success')
+            except Exception as e:
+                print("MongoDB 데이터 저장 중 오류 발생:", e)
+                return render(request, 'upload_success.html', {'form': form, 'error': '데이터 저장 중 오류가 발생했습니다.'})
+        else:
+            print("폼 유효성 검사 실패:", form.errors)
     else:
         form = FundingMovieForm()
     return render(request, 'upload_funding.html', {'form': form})
@@ -88,3 +105,25 @@ def funding_detail(request, movie_id):
     movie = get_object_or_404(FundingMovie, id=movie_id)
     return render(request, 'funding_detail.html', {'movie': movie})
 
+def movie_list(request):
+    movies = list(collection.find()) # DB에서 모든 영화 데이터 가져오기
+    return render(request, 'movie_list.html', {'movies':movies})
+
+
+def get_poster_image(request, poster_id):
+    try:
+        # ObjectId로 변환하여 파일 가져오기
+        poster_object_id = ObjectId(poster_id)
+        file = poster_fs.get(poster_object_id)
+
+        # 파일 형식에 따라 Content-Type 동적으로 설정
+        content_type = "image/jpeg"  # 기본값
+        if file.filename.endswith('.png'):
+            content_type = "image/png"
+        elif file.filename.endswith('.gif'):
+            content_type = "image/gif"
+
+        image_data = file.read()
+        return HttpResponse(image_data, content_type=content_type)
+    except gridfs.errors.NoFile:
+        return HttpResponse(status=404)  # 파일이 없으면 404 반환
