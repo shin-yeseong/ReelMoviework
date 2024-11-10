@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'streaming',
     'funding',
     'rest_framework',
+    'ReelMoviework'
 ]
 
 MIDDLEWARE = [
