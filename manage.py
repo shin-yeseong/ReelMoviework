@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 import django
@@ -8,7 +6,7 @@ from django.core.management import execute_from_command_line
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mongodbconnect.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mongodbconnect.settings')  # 여기에서 settings 모듈을 명확히 설정
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -21,6 +19,6 @@ def main():
 
 
 if __name__ == '__main__':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReelMoviework.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mongodbconnect.settings")  # settings 모듈 설정 수정
     django.setup()
     execute_from_command_line(sys.argv)
