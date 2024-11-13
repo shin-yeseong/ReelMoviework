@@ -23,7 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('streaming/', include('streaming.urls')),
     path('funding/', include('funding.urls')),
+    path('common/', include('common.urls')),  # common 앱의 URL 포함
     path('', home, name='home'),  # 메인 페이지 URL
     path('funding-page/', funding_movie_page, name='funding_movie_page'),  # 펀딩 영화 페이지 URL
     path('streaming-page/', streaming_movie_page, name='streaming_movie_page'),  # 스트리밍 영화 페이지 URL
+
 ]
