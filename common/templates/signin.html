@@ -1,6 +1,7 @@
-<!-- templates/main/signin.html -->
+<!-- templates/signin.html -->
 <form method="post">
-    <label for="username">Username:</label>
+    {% csrf_token %}
+    <label for="username">ID:</label>
     <input type="text" name="username" id="username" required>
 
     <label for="password">Password:</label>

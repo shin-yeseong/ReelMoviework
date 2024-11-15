@@ -146,3 +146,4 @@ MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
 client = MongoClient(MONGO_DB_URL)
 mongo_db = client[MONGO_DB_NAME]
 
+AUTHENTICATION_BACKENDS = ['common.authentication.MongoBackend']

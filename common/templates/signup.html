@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1>Sign Up</h1>
+    <form method="POST" action="{% url 'signup' %}">
+        {% csrf_token %}
+
+        <!-- 사용자 이름 -->
+        <label for="username">ID:</label>
+        <input type="text" id="username" name="username" maxlength="50" required>
+
+        <!-- 이메일 -->
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <!-- 비밀번호 -->
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" maxlength="255" required>
+
+        <!-- 성 -->
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" maxlength="30" required>
+
+        <!-- 이름 -->
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" maxlength="30" required>
+
+        <!-- 생년월일 -->
+        <label for="date_of_birth">Date of Birth:</label>
+        <input type="date" id="date_of_birth" name="date_of_birth">
+
+        <label for="phone_number">전화번호:</label>
+        <input type="text" id="phone_number" name="phone_number" maxlength="15"><br><br>
+
+        <label for="address">주소:</label>
+        <input type="text" id="address" name="address" maxlength="255"><br><br>
+
+        <!-- 성별 -->
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="">Select</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select>
+
+        <!-- 역할 -->
+        <label for="role">Role:</label>
+        <select id="role" name="role" required>
+            <option value="viewer" selected>Viewer</option>
+            <option value="host">Host</option>
+        </select>
+
+        <!-- 은행 -->
+        <label for="bank">Bank:</label>
+        <input type="text" id="bank" name="bank" maxlength="20">
+
+        <button type="submit">Sign Up</button>
+    </form>
+</body>
+</html>
