@@ -13,7 +13,7 @@ from mongodbconnect import settings
 from pymongo import MongoClient
 import gridfs
 from django.http import HttpResponse
-
+import json
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
@@ -33,6 +33,10 @@ def upload_funding_movie(request):
         data = request.POST.copy()
         data.setlist('genre', [choice for choice in request.POST.getlist('genre') if choice])
 
+        # Handling actors: Combine all actor inputs into a JSON-compatible list
+        actors = data.getlist('actors')  # Assuming each actor is input separately
+        data['actors'] = json.dumps(actors)  # Convert list to JSON string for form validation
+
         form = FundingMovieForm(data, request.FILES)
         print("POST 요청 수신")
         if form.is_valid():
@@ -45,6 +49,23 @@ def upload_funding_movie(request):
             # 현재 날짜와 시간을 create_date로 설정
             create_date_datetime = datetime.now()
 
+            # Convert actors input to a JSON list format
+            actors_input = request.POST.getlist('actors')
+
+            try:
+                # Convert the comma-separated list into a JSON-compatible list
+                data['actors'] = json.dumps(actors_input)
+            except (TypeError, json.JSONDecodeError):
+                return render(request, 'upload_funding.html', {
+                    'form': FundingMovieForm(data, request.FILES),
+                    'error': 'Invalid actors format. Please enter a list of names.'
+                })
+
+            # Gather funding options
+            funding_options = []
+            for amount, benefit in zip(data.getlist('funding_amount'), data.getlist('funding_benefit')):
+                funding_options.append({'amount': int(amount), 'benefit': benefit})
+
             funding_data = {
                 "f_id": str(uuid.uuid4()),  # 고유 ID 생성
                 "title": form.cleaned_data['title'],
@@ -53,6 +74,9 @@ def upload_funding_movie(request):
                 "intention": form.cleaned_data['intention'],
                 "summary": form.cleaned_data['summary'],
                 "making_description": form.cleaned_data['making_description'],
+                "creator": form.cleaned_data['creator'],
+                "actors": json.loads(data['actors']),  # Convert back to Python list for MongoDB
+                "creator_talk": form.cleaned_data['creator_talk'],  # director's message
                 "creator_id": str(request.user.id),  # 로그인한 사용자의 ID 저장
                 "target_funding": form.cleaned_data['target_funding'],
                 "funding_description": form.cleaned_data['funding_description'],
@@ -62,8 +86,14 @@ def upload_funding_movie(request):
                 "backers": [],
                 "backers_funding": [],
                 "total_funding_amount": 0,
-                "payment_history": []
+                "payment_history": [],
+                "funding_options":funding_options
             }
+
+            funding_amounts = request.POST.getlist('funding_amount')
+            funding_benefits = request.POST.getlist('funding_benefit')
+            funding_options = [{"amount": amt, "benefit": ben} for amt, ben in zip(funding_amounts, funding_benefits)]
+            funding_data["funding_options"] = funding_options
 
             # GridFS에 파일 저장
             movie_file = request.FILES.get('movie_file')
@@ -127,3 +157,9 @@ def get_poster_image(request, poster_id):
         return HttpResponse(image_data, content_type=content_type)
     except gridfs.errors.NoFile:
         return HttpResponse(status=404)  # 파일이 없으면 404 반환
+
+def funding_detail(request, movie_id):
+    movie = collection.find_one({"f_id":movie_id})
+    if not movie:
+        return HttpResponse(status=404)
+    return render(request, 'movie_detail.html', {'movie':movie})
