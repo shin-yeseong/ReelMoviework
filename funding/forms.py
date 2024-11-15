@@ -24,7 +24,7 @@ class FundingMovieForm(forms.ModelForm):
     class Meta:
         model = FundingMovie
         fields = [
-            'title', 'genre', 'time', 'intention', 'summary',
-            'making_description', 'target_funding', 'funding_description',
-            'funding_deadline'
+            'title', 'genre', 'time', 'intention', 'summary', 'making_description',
+            'target_funding', 'funding_description', 'funding_deadline',
+            'creator', 'actors', 'creator_talk'
         ]

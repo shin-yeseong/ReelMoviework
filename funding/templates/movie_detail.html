@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #f04a00;
+        }
+
+        .detail-row {
+            margin-bottom: 15px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .poster-image {
+            display: block;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ movie.title }}</h1>
+
+        <!-- 포스터 이미지 -->
+        <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="poster-image">
+
+        <!-- 영화 상세 정보 -->
+        <div class="detail-row"><span class="label">Genre:</span> {{ movie.genre|join:", " }}</div>
+        <div class="detail-row"><span class="label">Time:</span> {{ movie.time }} minutes</div>
+        <div class="detail-row"><span class="label">Intention:</span> {{ movie.intention }}</div>
+        <div class="detail-row"><span class="label">Summary:</span> {{ movie.summary }}</div>
+        <div class="detail-row"><span class="label">Making Description:</span> {{ movie.making_description }}</div>
+        <div class="detail-row"><span class="label">Creator:</span> {{ movie.creator }}</div>
+        <div class="detail-row"><span class="label">Target Funding:</span> ₩{{ movie.target_funding }}</div>
+        <div class="detail-row"><span class="label">Funding Description:</span> {{ movie.funding_description }}</div>
+        <div class="detail-row"><span class="label">Funding Deadline:</span> {{ movie.funding_deadline }}</div>
+        <div class="detail-row"><span class="label">Created On:</span> {{ movie.create_date }}</div>
+
+             <!-- Creator and Actors -->
+        <div class="detail-row"><span class="label">Creator (Director):</span> {{ movie.creator }}</div>
+        <div class="detail-row"><span class="label">Actors:</span> {{ movie.actors|join:", " }}</div>
+
+        <!-- Creator's Talk -->
+        <div class="detail-row"><span class="label">Creator's Talk:</span> {{ movie.creator_talk }}</div>
+
+        <!-- Total funding amount and number of backers -->
+        <div class="detail-row"><span class="label">Total Funding Amount:</span> ₩{{ movie.total_funding_amount }}</div>
+        <div class="detail-row"><span class="label">Backers:</span> {{ movie.backers|length }}명</div>
+
+                <!-- Funding Options -->
+        <div class="detail-row"><span class="label">Funding Options:</span></div>
+        <ul>
+            {% for option in movie.funding_options %}
+                <li>₩{{ option.amount }} - {{ option.benefit }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
+
