@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('streaming/', include('streaming.urls')),
     path('funding/', include('funding.urls')),
+    path('common/', include('common.urls')),
     path('', home, name='home'),  # 루트 URL에 홈 페이지 추가
 ]
 

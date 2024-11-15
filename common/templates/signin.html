@@ -1,0 +1,11 @@
+<!-- templates/signin.html -->
+<form method="post">
+    {% csrf_token %}
+    <label for="username">ID:</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+
+    <button type="submit">Sign In</button>
+</form>

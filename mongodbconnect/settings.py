@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'streaming',
     'funding',
     'rest_framework',
+    'common'
 ]
 
 MIDDLEWARE = [
@@ -144,3 +145,5 @@ MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
 # MongoDB 클라이언트 생성
 client = MongoClient(MONGO_DB_URL)
 mongo_db = client[MONGO_DB_NAME]
+
+AUTHENTICATION_BACKENDS = ['common.authentication.MongoBackend']
