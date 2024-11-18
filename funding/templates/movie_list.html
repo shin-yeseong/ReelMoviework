@@ -1,20 +1,19 @@
-<!-- funding/templates/movie_list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Movie List</title>
+    <title>Uploaded Movies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* 기본 스타일 설정 */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Poppins', sans-serif;
+            background-color: #141414;
+            color: white;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            flex-direction: column;
             margin: 0;
-            padding: 0;
         }
 
         h1 {
@@ -25,86 +24,161 @@
         .movie-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
-            justify-content: flex-start;  /* 왼쪽부터 정렬 */
+            gap: 20px;
+            justify-content: center;
             margin-top: 20px;
-            max-width: 1200px;
-            margin: 0 auto; /* 가운데 정렬 */
         }
 
-        .movie-box {
-            width: 280px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
+        .movie-card {
+            width: 300px;
+            height: 500px;
+            perspective: 1000px;
+            margin: 20px;
+            position: relative;
             cursor: pointer;
-            text-decoration: none;
-            color: black;
+            transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease;
+            z-index: 1;
         }
 
-        .movie-image {
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .movie-card-inner {
             width: 100%;
-            height: 220px;
+            height: 100%;
+            position: absolute;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .movie-card.flipped .movie-card-inner {
+            transform: scale(1.3) rotateY(180deg) scaleX(-1);
+        }
+
+        .movie-card-front, .movie-card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .movie-card-front {
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .poster-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
-        .movie-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 15px;
+        .movie-card-back {
+            background-color: #555;
+            color: #fff;
+            transform: rotateY(180deg) scaleX(-1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            font-size: 1em;
+            position: relative;
         }
 
-        .movie-genre {
-            font-size: 15px;
-            color: #777;
-            margin-top: 8px;
+        .background-poster {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            object-fit: cover;
+            z-index: -1;
+            border-radius: 8px;
         }
 
-        .movie-target {
-            font-size: 15px;
-            color: #333;
-            margin-top: 10px;
-        }
-
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .upload-button {
-            text-decoration: none;
-            padding: 12px 24px;
+        .button {
+            padding: 10px 20px;
+            background-color: #ff7518;
             color: white;
-            background-color: #4CAF50;
-            border-radius: 6px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            background-color: #f04a00;
         }
     </style>
 </head>
 <body>
-    <h1>Uploaded Movies</h1>
 
+    <h1>Uploaded Movies</h1>
     <div class="movie-container">
         {% if movies %}
             {% for movie in movies %}
-                <!-- 영화 박스를 링크로 감싸기 -->
-                <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="movie-box">
-                    <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="movie-image">
-                    <div class="movie-title">{{ movie.title }}</div>
-                    <div class="movie-genre">{{ movie.genre|join:", " }}</div>
-                    <div class="movie-target">Target Funding: ₩{{ movie.target_funding }}</div>
-                </a>
+                <div class="movie-card" onclick="toggleCard(this)">
+                    <div class="movie-card-inner">
+                        <!-- 카드 앞면 -->
+                        <div class="movie-card-front">
+                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
+                                 alt="{{ movie.title }} Poster"
+                                 class="poster-image">
+                        </div>
+                        <!-- 카드 뒷면 -->
+                        <div class="movie-card-back">
+                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
+                                 alt="{{ movie.title }} Poster"
+                                 class="background-poster">
+                            <div>
+                                <h2>{{ movie.title }}</h2>
+                                <p><strong>Creator:</strong> {{ movie.creator }}</p>
+                                <p><strong>Running Time:</strong> {{ movie.time }}분</p>
+
+                            </div>
+                            <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button">View Details</a>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
         {% else %}
             <p>No movies uploaded yet.</p>
         {% endif %}
     </div>
 
-    <div class="button-container">
-        <a href="{% url 'funding:upload_funding_movie' %}" class="upload-button">Upload Another Movie</a>
-    </div>
+    <script>
+        let selectedMovieCard = null;
+
+        function toggleCard(cardElement) {
+            if (selectedMovieCard && selectedMovieCard !== cardElement) {
+                selectedMovieCard.classList.remove('flipped');
+                selectedMovieCard.style.zIndex = 1;
+            }
+            cardElement.classList.toggle('flipped');
+            selectedMovieCard = cardElement.classList.contains('flipped') ? cardElement : null;
+            if (selectedMovieCard) {
+                selectedMovieCard.style.zIndex = 1000;
+            } else {
+                cardElement.style.zIndex = 1;
+            }
+        }
+    </script>
+
 </body>
 </html>
