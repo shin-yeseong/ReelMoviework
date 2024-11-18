@@ -23,4 +23,4 @@ class StreamingMovieForm(forms.ModelForm):
 
     class Meta:
         model = StreamingMovie
-        fields = ['title', 'genre', 'time', 'summary', 'release_date', 'streaming_url']
+        fields = ['title', 'genre','time', 'actors', 'summary', 'release_date']
