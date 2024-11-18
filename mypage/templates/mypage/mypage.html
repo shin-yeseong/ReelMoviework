@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+</head>
+<body>
+    <h1>My Page</h1>
+
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>First Name:</strong> {{ user.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+    <p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+    <p><strong>Gender:</strong> {{ user.gender }}</p>
+    <p><strong>Bank:</strong> {{ user.bank }}</p>
+    <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+    <p><strong>Address:</strong> {{ user.address }}</p>
+
+    <a href="{% url 'mypage:mypage' %}">My Page</a>
+    <a href="{% url 'mypage:update_profile' %}">Edit Profile</a><br>
+    <a href="{% url 'mypage:change_password' %}">Change Password</a><br>
+</body>
+</html>
