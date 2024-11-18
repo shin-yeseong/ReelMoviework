@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'streaming',
     'funding',
     'rest_framework',
-    'common'
+    'common',
+    'mypage',
 ]
 
 MIDDLEWARE = [

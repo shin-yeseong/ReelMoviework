@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
-from .models import User, ContactInfo, RegistrationInfo, SecurityInfo
+#from .models import User, ContactInfo, RegistrationInfo, SecurityInfo
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -16,12 +16,12 @@ from datetime import datetime
 
 # 사용자 회원가입 뷰
 from django.shortcuts import render, redirect
-from .models import User
+#from .models import User
 from django.contrib.auth.hashers import make_password
 from datetime import datetime
 
 from django.shortcuts import render, redirect
-from .models import User
+#from .models import User
 from django.contrib.auth.hashers import make_password
 from datetime import datetime
 
@@ -31,10 +31,22 @@ from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 from django.http import HttpResponse
 
-# MongoDB 연결 설정
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.core.mail import send_mail
+from pymongo import MongoClient
+from django.contrib.auth.hashers import make_password, check_password
+from bson.objectid import ObjectId
+from datetime import datetime
+import re
+
+# MongoDB 연결 설정 (데이터베이스 이름과 컬렉션 이름 수정)
 client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority')
-db = client['mongodbdatabase']
-users_collection = db['users']
+db = client['mongodatabase']
+users_collection = db['user']
 
 # 회원가입 뷰
 def signup(request):
@@ -103,9 +115,6 @@ def signup(request):
     return render(request, 'signup.html')
 
 
-
-
-
 # 로그인 뷰
 def signin(request):
     if request.method == 'POST':
@@ -133,6 +142,23 @@ def signin(request):
             return render(request, 'signin.html', {'error': "User not found"})
 
     return render(request, 'signin.html')
+
+
+# 이메일 발송 기능
+def send_email(request):
+    if request.method == 'POST':
+        recipient = request.POST.get('email')
+
+        # 이메일 주소가 @dgu.ac.kr로 끝나는지 확인하는 조건
+        if re.match(r'^[\w\.-]+@dgu\.ac\.kr$', recipient):
+            subject = 'Welcome to our platform'
+            message = 'Thank you for signing up. We are happy to have you.'
+            send_mail(subject, message, 'from@example.com', [recipient])
+            return HttpResponse("Email sent successfully!")
+        else:
+            return HttpResponse("Only @dgu.ac.kr email addresses are allowed.")
+
+    return render(request, 'account/send_email.html')
 
 
 # 이메일 발송 기능
