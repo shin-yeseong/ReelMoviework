@@ -39,6 +39,9 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: black;
         }
 
         .movie-image {
@@ -87,24 +90,19 @@
     <div class="movie-container">
         {% if movies %}
             {% for movie in movies %}
-                <div class="movie-box">
-                    <!-- poster_image로 이미지 불러오기 -->
+                <!-- 영화 박스를 링크로 감싸기 -->
+                <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="movie-box">
                     <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="movie-image">
-
-                    <!-- 영화 제목과 장르 -->
                     <div class="movie-title">{{ movie.title }}</div>
                     <div class="movie-genre">{{ movie.genre|join:", " }}</div>
-
-                    <!-- 목표 펀딩 금액 -->
                     <div class="movie-target">Target Funding: ₩{{ movie.target_funding }}</div>
-                </div>
+                </a>
             {% endfor %}
         {% else %}
             <p>No movies uploaded yet.</p>
         {% endif %}
     </div>
 
-    <!-- 업로드 페이지로 돌아가기 버튼 -->
     <div class="button-container">
         <a href="{% url 'funding:upload_funding_movie' %}" class="upload-button">Upload Another Movie</a>
     </div>
