@@ -1,5 +1,5 @@
 from django import forms
-from common.models import User  # 커스텀 사용자 모델
+# from common.models import User  # 커스텀 사용자 모델
 
 
 class ProfileUpdateForm(forms.ModelForm):
