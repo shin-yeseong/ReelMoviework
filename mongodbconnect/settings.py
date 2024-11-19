@@ -147,3 +147,10 @@ client = MongoClient(MONGO_DB_URL)
 mongo_db = client[MONGO_DB_NAME]
 
 AUTHENTICATION_BACKENDS = ['common.authentication.MongoBackend']
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jjungjenny0210'
+EMAIL_HOST_PASSWORD = 'olpu mycb acnq dpui'

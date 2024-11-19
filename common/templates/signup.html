@@ -1,5 +1,13 @@
 <form method="post">
     {% csrf_token %}
+
+    <!-- 에러 메시지 표시 -->
+    {% if error %}
+        <div style="color: red; margin-bottom: 10px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
     <label>Username:</label>
     <input type="text" name="username" required><br>
 
