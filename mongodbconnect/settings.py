@@ -147,4 +147,11 @@ MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
 client = MongoClient(MONGO_DB_URL)
 mongo_db = client[MONGO_DB_NAME]
 
-AUTHENTICATION_BACKENDS = ['common.authentication.MongoBackend']
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP 서버 주소
+EMAIL_PORT = 587  # SMTP 서버 포트
+EMAIL_USE_TLS = True  # TLS 사용 여부
+EMAIL_HOST_USER = 'jjungjenny0210'  # 이메일 계정
+EMAIL_HOST_PASSWORD = 'olpu mycb acnq dpui'  # 이메일 비밀번호
