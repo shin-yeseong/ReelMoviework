@@ -3,5 +3,9 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.11 (OSSP_24_2_LikeMovie_New)" />
   </component>
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (OSSP_24_2_LikeMovie_New)" project-jdk-type="Python SDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (ReelMoviework)" project-jdk-type="Python SDK" />
+>>>>>>> 36e6f5ef9db232c240c99a0d12c3d2fda4d08830
 </project>
