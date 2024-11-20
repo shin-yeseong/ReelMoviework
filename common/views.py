@@ -43,7 +43,15 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import re
 
-# MongoDB 연결 설정 (데이터베이스 이름과 컬렉션 이름 수정)
+import uuid
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from pymongo import MongoClient
+from django.contrib.auth.hashers import make_password, check_password
+from datetime import datetime
+from django.http import HttpResponse
+from django.urls import reverse
+# MongoDB 연결 설정
 client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority')
 db = client['mongodatabase']
 users_collection = db['user']
@@ -63,10 +71,8 @@ def signup(request):
         phone_number = request.POST.get('phone_number')
         address = request.POST.get('address')
 
-        # 비밀번호 해시 처리
         hashed_password = make_password(password)
 
-        # 생년월일 변환
         date_of_birth = None
         if date_of_birth_str:
             try:
@@ -74,21 +80,20 @@ def signup(request):
             except ValueError:
                 return render(request, 'signup.html', {'error': 'Invalid date format. Please use YYYY-MM-DD.'})
 
-        # 중복 사용자 확인
+        if not email.endswith('@dgu.ac.kr'):
+            return render(request, 'signup.html', {'error': 'Only @dgu.ac.kr emails are allowed.'})
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
             return render(request, 'signup.html', {'error': 'Username already exists'})
+        existing_email = users_collection.find_one({'email': email})
+        if existing_email:
+            return render(request, 'signup.html', {'error': 'Email already exists. Please use a different email.'})
 
-        # 현재 시각으로 가입일 설정
+        # 계정 활성화를 위한 인증 토큰 생성
+        token = str(uuid.uuid4())
         date_joined = datetime.now()
 
-        # 사용자 ID 자동 생성 (MongoDB의 `_id` 사용 대신 직접 관리)
-        user_id = users_collection.count_documents({}) + 1
-
-        # MongoDB에 사용자 정보 저장
         user_data = {
-            'user_id': user_id,
-            'last_login': None,
             'username': username,
             'email': email,
             'password': hashed_password,
@@ -100,19 +105,22 @@ def signup(request):
             'bank': bank,
             'phone_number': phone_number,
             'address': address,
-            'is_active': True,
-            'is_staff': False,
-            'is_superuser': False,
+            'is_active': False,  # 계정 비활성화 상태로 저장
+            'token': token,
             'date_joined': date_joined,
         }
 
-        try:
-            users_collection.insert_one(user_data)
-            return redirect('signin')
-        except Exception as e:
-            return render(request, 'signup.html', {'error': str(e)})
+        users_collection.insert_one(user_data)
 
+        # 이메일로 인증 링크 전송
+        verification_link =  f"http://127.0.0.1:8000{reverse('verify_email', args=[token])}"
+        subject = 'Please verify your email'
+        message = f"Click the link to verify your email: {verification_link}"
+        send_mail(subject, message, 'from@example.com', [email])
+
+        return HttpResponse("A verification link has been sent to your email.")
     return render(request, 'signup.html')
+
 
 
 # 로그인 뷰
@@ -135,7 +143,7 @@ def signin(request):
                     {'$set': {'last_login': datetime.now()}}
                 )
                 request.session['user_id'] = str(user['_id'])
-                return redirect('home')
+                return redirect('/')
             else:
                 return render(request, 'signin.html', {'error': "Invalid password"})
         else:
@@ -144,43 +152,27 @@ def signin(request):
     return render(request, 'signin.html')
 
 
-# 이메일 발송 기능
-def send_email(request):
-    if request.method == 'POST':
-        recipient = request.POST.get('email')
+def verify_email(request, token):
+    try:
+        # MongoDB에서 토큰을 가진 사용자 검색
+        print(f"Token received: {token}")  # 디버깅용
+        user = users_collection.find_one({'token': token})
+        print(f"User found: {user}")  # 디버깅용
 
-        # 이메일 주소가 @dgu.ac.kr로 끝나는지 확인하는 조건
-        if re.match(r'^[\w\.-]+@dgu\.ac\.kr$', recipient):
-            subject = 'Welcome to our platform'
-            message = 'Thank you for signing up. We are happy to have you.'
-            send_mail(subject, message, 'from@example.com', [recipient])
-            return HttpResponse("Email sent successfully!")
+        if user:
+            # 사용자 활성화 처리
+            users_collection.update_one(
+                {'token': token},
+                {'$set': {'is_active': True, 'token': None}}
+            )
+            return HttpResponse("Your email has been verified! You can now log in.")
         else:
-            return HttpResponse("Only @dgu.ac.kr email addresses are allowed.")
-
-    return render(request, 'account/send_email.html')
-
-
-# 이메일 발송 기능
-import re
-from django.core.mail import send_mail
-from django.http import HttpResponse
-from django.shortcuts import render
+            return HttpResponse("Invalid or expired token.", status=400)
+    except Exception as e:
+        # 예외 처리
+        return HttpResponse(f"An error occurred: {str(e)}", status=500)
 
 
-'''def send_email(request):
-    if request.method == 'POST':
-        recipient = request.POST.get('email')
 
-        # 이메일 주소가 @dgu.ac.kr로 끝나는지 확인하는 조건
-        if re.match(r'^[\w\.-]+@dgu\.ac\.kr$', recipient):
-            subject = 'Welcome to our platform'
-            message = 'Thank you for signing up. We are happy to have you.'
-            send_mail(subject, message, 'from@example.com', [recipient])
-            return HttpResponse("Email sent successfully!")
-        else:
-            return HttpResponse("Only @dgu.ac.kr email addresses are allowed.")
-
-    return render(request, 'account/send_email.html')'''
 
 

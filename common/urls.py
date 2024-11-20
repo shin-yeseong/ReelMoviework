@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
+    path('verify-email/<str:token>/', views.verify_email, name='verify_email')
 
 ]
