@@ -4,16 +4,43 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from .forms import ProfileUpdateForm
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from streaming.models import StreamingMovie  # Streaming 앱의 모델 import
+
+@login_required
+def purchased_movies(request):
+    """
+    사용자가 구매한 영화 목록을 가져오고 페이징 처리.
+    """
+    user = request.user
+
+    # 로그인한 사용자가 구매한 영화 목록 필터링
+    purchased_movies = StreamingMovie.objects.filter(viewers=user).only('title', 'genre', 'time')
+
+    # Paginator 적용: 페이지당 10개 영화
+    paginator = Paginator(purchased_movies, 10)
+    page_number = request.GET.get('page')  # 현재 페이지 번호
+    page_movies = paginator.get_page(page_number)  # 해당 페이지의 영화들 가져오기
+
+    # 템플릿에 페이지 객체 전달
+    return render(request, 'mypage/purchased_movies.html', {'movies': page_movies})
+
 
 
 @login_required
 def mypage(request):
     """
-    로그인한 사용자의 정보를 보여주는 뷰.
+    마이페이지 메인 화면: 내 정보와 구매한 영화 목록 표시
     """
     user = request.user
-    return render(request, 'mypage/mypage.html', {'user': user})
+    purchased_movies = StreamingMovie.objects.filter(viewers=user).only('title', 'genre', 'time')
 
+    return render(request, 'mypage/mypage.html', {
+        'user': user,
+        'movies': purchased_movies
+    })
 @login_required
 def update_profile(request):
     """

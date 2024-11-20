@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchased Movies</title>
+</head>
+<body>
+    <h1>Purchased Movies</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Duration (minutes)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in movies %}
+            <tr>
+                <td>{{ movie.title }}</td>
+                <td>{{ movie.genre|join:", " }}</td>
+                <td>{{ movie.time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if movies.has_previous %}
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ movies.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ movies.number }} of {{ movies.paginator.num_pages }}.
+            </span>
+
+            {% if movies.has_next %}
+                <a href="?page={{ movies.next_page_number }}">Next</a>
+                <a href="?page={{ movies.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <a href="{% url 'mypage:mypage' %}">Back to My Page</a>
+</body>
+</html>
