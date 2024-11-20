@@ -143,7 +143,7 @@ def signin(request):
                     {'$set': {'last_login': datetime.now()}}
                 )
                 request.session['user_id'] = str(user['_id'])
-                return redirect('send_email')
+                return redirect('/')
             else:
                 return render(request, 'signin.html', {'error': "Invalid password"})
         else:
