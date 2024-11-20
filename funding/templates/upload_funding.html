@@ -115,6 +115,16 @@
             container.appendChild(div);
         }
 
+        function addActorField() {
+            const container = document.getElementById('actors-container');
+            const input = document.createElement('input');
+            input.type = "text";
+            input.name = "actors";
+            input.placeholder = "Lead Actor";
+            input.required = true;
+            container.appendChild(input);
+        }
+
         function toggleEtcInput(checkbox) {
             const etcInputContainer = document.getElementById('etc-input-container');
             if (checkbox.checked) {
@@ -155,6 +165,21 @@
                 <input type="text" id="etc-genre" name="genre">
             </div>
 
+                        <!-- Director's Name -->
+            <label for="creator">Director's Name:</label>
+            <input type="text" id="creator" name="creator" required>
+
+            <!-- Lead Actors -->
+            <label>Lead Actors:</label>
+            <div id="actors-container">
+                <input type="text" name="actors" placeholder="Lead Actor" required>
+            </div>
+            <button type="button" onclick="addActorField()">Add Actor</button>
+
+            <!-- Director's Message (combined with summary) -->
+            <label for="creator_talk">Director's Message:</label>
+            <textarea id="creator_talk" name="creator_talk" rows="3" required></textarea>
+
             <label for="time">Movie Time (in minutes):</label>
             <input type="number" id="time" name="time" required>
 
@@ -185,8 +210,8 @@
             </div>
             <button type="button" class="add-option-btn" onclick="addFundingOption()">Add Option</button>
 
-            <label for="movie_file">Upload Movie File:</label>
-            <input type="file" id="movie_file" name="movie_file" accept="video/mp4" required>
+<!--            <label for="movie_file">Upload Movie File:</label>-->
+<!--            <input type="file" id="movie_file" name="movie_file" accept="video/mp4" required>-->
 
             <!-- 포스터 파일 -->
             <label for="poster_file">Upload Poster Image:</label>

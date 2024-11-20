@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Uploaded Movies</title>
+    <title>Movie List</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -16,11 +16,6 @@
             margin: 0;
         }
 
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
         .movie-container {
             display: flex;
             flex-wrap: wrap;
@@ -29,6 +24,7 @@
             margin-top: 20px;
         }
 
+        /* 영화 카드 스타일 */
         .movie-card {
             width: 300px;
             height: 500px;
@@ -40,6 +36,7 @@
             z-index: 1;
         }
 
+        /* 마우스 올렸을 때 공중에 뜨는 효과 */
         .movie-card:hover {
             transform: translateY(-10px) scale(1.05);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
@@ -76,6 +73,7 @@
             padding: 20px;
         }
 
+        /* 포스터 이미지 스타일 */
         .poster-image {
             position: absolute;
             top: 0;
@@ -99,18 +97,20 @@
             position: relative;
         }
 
+        /* 투명한 배경 포스터 */
         .background-poster {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.2;
+            opacity: 0.2; /* 투명도 조절 */
             object-fit: cover;
-            z-index: -1;
+            z-index: -1; /* 내용 뒤에 배치 */
             border-radius: 8px;
         }
 
+        /* 재생 버튼 스타일 */
         .button {
             padding: 10px 20px;
             background-color: #ff7518;
@@ -129,54 +129,64 @@
 </head>
 <body>
 
-    <h1>Uploaded Movies</h1>
+    <h1>Streaming Movies</h1>
     <div class="movie-container">
-        {% if movies %}
-            {% for movie in movies %}
-                <div class="movie-card" onclick="toggleCard(this)">
-                    <div class="movie-card-inner">
-                        <!-- 카드 앞면 -->
-                        <div class="movie-card-front">
-                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
-                                 alt="{{ movie.title }} Poster"
-                                 class="poster-image">
-                        </div>
-                        <!-- 카드 뒷면 -->
-                        <div class="movie-card-back">
-                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
-                                 alt="{{ movie.title }} Poster"
-                                 class="background-poster">
-                            <div>
-                                <h2>{{ movie.title }}</h2>
-                                <p><strong>Creator:</strong> {{ movie.creator }}</p>
-                                <p><strong>Running Time:</strong> {{ movie.time }}분</p>
+        {% for movie in movies %}
+            <div class="movie-card" onclick="toggleCard(this, '{{ movie.s_id }}')">
+                <div class="movie-card-inner">
+                    <!-- 카드 앞면 -->
+                    <div class="movie-card-front">
+                        <img src="{% url 'streaming:streaming_movie_poster' poster_id=movie.poster_image_id %}"
+                             alt="{{ movie.title }} Poster"
+                             class="poster-image">
+                    </div>
+                    <!-- 카드 뒷면 -->
+                    <div class="movie-card-back">
+                        <!-- 투명 배경 포스터 -->
+                        <img src="{% url 'streaming:streaming_movie_poster' poster_id=movie.poster_image_id %}"
+                             alt="{{ movie.title }} Poster"
+                             class="background-poster">
 
-                            </div>
-                            <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button">View Details</a>
+                        <div>
+                            <h2>{{ movie.title }}</h2>
+                            <p><strong>Genre:</strong> {{ movie.genre|join:", " }}</p>
+                            <p><strong>Time:</strong> {{ movie.time }} minutes</p>
+                            <p><strong>Actors:</strong> {{ movie.actors }}</p>
+                            <p><strong>Summary:</strong> {{ movie.summary }}</p>
                         </div>
+                        <button class="button" onclick="playMovie(event, '{{ movie.s_id }}')">Play Movie</button>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No movies uploaded yet.</p>
-        {% endif %}
+            </div>
+        {% endfor %}
     </div>
 
     <script>
         let selectedMovieCard = null;
 
-        function toggleCard(cardElement) {
+        // 카드 클릭 시 플립 및 확대 기능
+        function toggleCard(cardElement, movieId) {
+            // 이미 선택된 카드가 있고, 클릭한 카드가 동일하지 않으면 기존 카드 리셋
             if (selectedMovieCard && selectedMovieCard !== cardElement) {
                 selectedMovieCard.classList.remove('flipped');
-                selectedMovieCard.style.zIndex = 1;
+                selectedMovieCard.style.zIndex = 1; // 다른 카드의 z-index 기본값으로 설정
             }
+            // 현재 카드의 플립 상태 토글 및 z-index 조정
             cardElement.classList.toggle('flipped');
             selectedMovieCard = cardElement.classList.contains('flipped') ? cardElement : null;
+
+            // 클릭된 카드가 뒤집혔다면 z-index를 높게 설정
             if (selectedMovieCard) {
                 selectedMovieCard.style.zIndex = 1000;
             } else {
                 cardElement.style.zIndex = 1;
             }
+        }
+
+        // 영화 재생 함수
+        function playMovie(event, movieId) {
+            event.stopPropagation();  // 카드 닫히는 이벤트 중지
+            window.location.href = `/streaming/movie/${movieId}/`;  // streaming_movie_detail 뷰로 이동
         }
     </script>
 
