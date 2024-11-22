@@ -71,6 +71,10 @@ def signup(request):
         phone_number = request.POST.get('phone_number')
         address = request.POST.get('address')
 
+        # 비밀번호 길이 확인
+        if len(password) < 8:
+            return render(request, 'signup.html', {'error': 'Password must be at least 8 characters long.'})
+
         hashed_password = make_password(password)
 
         date_of_birth = None
