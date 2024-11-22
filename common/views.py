@@ -56,6 +56,9 @@ client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mo
 db = client['mongodatabase']
 users_collection = db['user']
 
+# MongoDB 임시 저장소 설정
+temporary_users_collection = db['temporary_users']
+
 # 회원가입 뷰
 def signup(request):
     if request.method == 'POST':
@@ -86,16 +89,17 @@ def signup(request):
 
         if not email.endswith('@dgu.ac.kr'):
             return render(request, 'signup.html', {'error': 'Only @dgu.ac.kr emails are allowed.'})
+
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
             return render(request, 'signup.html', {'error': 'Username already exists'})
+
         existing_email = users_collection.find_one({'email': email})
         if existing_email:
             return render(request, 'signup.html', {'error': 'Email already exists. Please use a different email.'})
 
         # 계정 활성화를 위한 인증 토큰 생성
         token = str(uuid.uuid4())
-        date_joined = datetime.now()
 
         user_data = {
             'username': username,
@@ -109,15 +113,15 @@ def signup(request):
             'bank': bank,
             'phone_number': phone_number,
             'address': address,
-            'is_active': False,  # 계정 비활성화 상태로 저장
+            'is_active': False,  # 계정 비활성화 상태
             'token': token,
-            'date_joined': date_joined,
         }
 
-        users_collection.insert_one(user_data)
+        # 임시 컬렉션에 저장
+        temporary_users_collection.insert_one(user_data)
 
         # 이메일로 인증 링크 전송
-        verification_link =  f"http://127.0.0.1:8000{reverse('verify_email', args=[token])}"
+        verification_link = f"http://127.0.0.1:8000{reverse('verify_email', args=[token])}"
         subject = 'Please verify your email'
         message = f"Click the link to verify your email: {verification_link}"
         send_mail(subject, message, 'from@example.com', [email])
@@ -158,19 +162,24 @@ def signin(request):
     return render(request, 'signin.html')
 
 
+# 이메일 인증 뷰
 def verify_email(request, token):
     try:
-        # MongoDB에서 토큰을 가진 사용자 검색
-        print(f"Token received: {token}")  # 디버깅용
-        user = users_collection.find_one({'token': token})
-        print(f"User found: {user}")  # 디버깅용
-
+        # 임시 컬렉션에서 사용자 검색
+        user = temporary_users_collection.find_one({'token': token})
         if user:
-            # 사용자 활성화 처리
-            users_collection.update_one(
-                {'token': token},
-                {'$set': {'is_active': True, 'token': None}}
-            )
+            # 사용자 데이터 복사
+            user_data = {key: user[key] for key in user if key != '_id'}
+            user_data['is_active'] = True  # 계정 활성화
+            user_data['date_joined'] = datetime.now()  # 가입 날짜 추가
+            user_data.pop('token', None)  # 토큰 제거
+
+            # 본 컬렉션에 저장
+            users_collection.insert_one(user_data)
+
+            # 임시 컬렉션에서 사용자 제거
+            temporary_users_collection.delete_one({'_id': user['_id']})
+
             return HttpResponse("Your email has been verified! You can now log in.")
         else:
             return HttpResponse("Invalid or expired token.", status=400)
