@@ -124,9 +124,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+#import os
 STATIC_URL = 'static/'
 
+'''STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # 프로젝트 내 static 디렉토리 경로
+]'''
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 배포용 정적 파일 경로
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -136,6 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+
 
 load_dotenv()  # .env 파일 로드
 
@@ -147,4 +153,11 @@ MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
 client = MongoClient(MONGO_DB_URL)
 mongo_db = client[MONGO_DB_NAME]
 
-AUTHENTICATION_BACKENDS = ['common.authentication.MongoBackend']
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP 서버 주소
+EMAIL_PORT = 587  # SMTP 서버 포트
+EMAIL_USE_TLS = True  # TLS 사용 여부
+EMAIL_HOST_USER = 'jjungjenny0210'  # 이메일 계정
+EMAIL_HOST_PASSWORD = 'olpu mycb acnq dpui'  # 이메일 비밀번호

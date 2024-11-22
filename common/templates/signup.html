@@ -1,5 +1,12 @@
 <form method="post">
     {% csrf_token %}
+
+     {% if error %}
+        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
     <label>Username:</label>
     <input type="text" name="username" required><br>
 
@@ -23,7 +30,7 @@
         <option value="male">Male</option>
         <option value="female">Female</option>
     </select><br>
-    
+
      <label>Role:</label>
     <select name="role">
         <option value="viewer">Viewer</option>
