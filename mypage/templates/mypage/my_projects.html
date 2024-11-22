@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Projects</title>
+</head>
+<body>
+    <h1>My Projects</h1>
+
+    {% if user_projects %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Total Funding Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in user_projects %}
+                    <tr>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>{{ project.total_funding_amount }}</td>
+                        <td>
+                            <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not registered any projects yet.</p>
+    {% endif %}
+
+    <a href="{% url 'mypage:mypage' %}">Back to My Page</a>
+</body>
+</html>
