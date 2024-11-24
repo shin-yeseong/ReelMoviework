@@ -19,12 +19,22 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .user-info {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <div class="success-message">
         <h1>성공했어요!</h1>
         <p>로그인에 성공했습니다. 환영합니다!</p>
+    </div>
+    <div class="user-info">
+        <p><strong>이름:</strong> {{ username }}</p>
+        <p><strong>이메일:</strong> {{ email }}</p>
+        <p><strong>역할:</strong> {{ role }}</p>
     </div>
 </body>
 </html>

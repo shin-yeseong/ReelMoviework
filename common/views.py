@@ -42,6 +42,13 @@ from django.contrib.auth.hashers import make_password, check_password
 from bson.objectid import ObjectId
 from datetime import datetime
 import re
+from django.contrib.auth.hashers import check_password
+from django.http import JsonResponse
+from django.utils.crypto import get_random_string
+from datetime import timedelta
+from django.conf import settings
+from pymongo import MongoClient
+from django.utils.timezone import now
 
 import uuid
 from django.core.mail import send_mail
@@ -51,6 +58,12 @@ from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime
 from django.http import HttpResponse
 from django.urls import reverse
+from datetime import datetime, timedelta
+from django.shortcuts import render, redirect
+from bson.objectid import ObjectId
+from django.utils.crypto import get_random_string
+from pymongo import MongoClient
+from django.http import JsonResponse
 # MongoDB 연결 설정
 client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority')
 db = client['mongodatabase']
@@ -131,6 +144,8 @@ def signup(request):
 
 
 
+sessions_collection = db['sessions']
+
 # 로그인 뷰
 def signin(request):
     if request.method == 'POST':
@@ -150,10 +165,24 @@ def signin(request):
                     {'username': username},
                     {'$set': {'last_login': datetime.now()}}
                 )
-                request.session['user_id'] = str(user['_id'])
-                request.session['user_role'] = user['role']
 
-                return render(request, 'login.html')
+                # 세션 데이터 생성
+                session_data = {
+                    "user_id": str(user['_id']),
+                    "user_role": user['role'],
+                    "last_login": datetime.now().isoformat(),
+                    "csrf_token": get_random_string(32),
+                    "expiry": (datetime.now() + timedelta(weeks=2)).isoformat()  # 2주 뒤 만료
+                }
+
+                # MongoDB의 sessions 컬렉션에 저장
+                session_id = get_random_string(32)
+                sessions_collection.insert_one({"_id": session_id, **session_data})
+
+                # 클라이언트에 세션 ID 저장
+                request.session['session_id'] = session_id
+
+                return redirect('login_success')
             else:
                 return render(request, 'signin.html', {'error': "Invalid password"})
         else:
@@ -161,6 +190,33 @@ def signin(request):
 
     return render(request, 'signin.html')
 
+def login_success(request):
+    session_id = request.session.get('session_id')
+    if not session_id:
+        return JsonResponse({"message": "Not logged in"}, status=401)
+
+    # MongoDB에서 세션 정보 확인
+    session = sessions_collection.find_one({"_id": session_id})
+    if not session:
+        return JsonResponse({"message": "Session expired or not found"}, status=401)
+
+    # 세션 만료 확인
+    if datetime.fromisoformat(session['expiry']) < datetime.now():
+        sessions_collection.delete_one({"_id": session_id})
+        return JsonResponse({"message": "Session expired"}, status=401)
+
+    # 사용자 정보 조회
+    user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        return JsonResponse({"message": "User not found"}, status=404)
+
+    # 사용자 정보를 템플릿으로 전달
+    context = {
+        "username": user.get("username"),
+        "email": user.get("email"),
+        "role": user.get("role"),
+    }
+    return render(request, "login.html", context)
 
 # 이메일 인증 뷰
 def verify_email(request, token):
@@ -187,7 +243,23 @@ def verify_email(request, token):
         # 예외 처리
         return HttpResponse(f"An error occurred: {str(e)}", status=500)
 
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages  # 메시지 프레임워크 사용
+from django.shortcuts import redirect
 
+def logout_view(request):
+    # 세션 ID 가져오기
+    session_id = request.session.get('session_id')
+    if not session_id:
+        return redirect('signin')  # 세션이 없으면 바로 리디렉트
 
+    # MongoDB에서 세션 삭제
+    result = sessions_collection.delete_one({"_id": session_id})
+    if result.deleted_count == 0:
+        return JsonResponse({"message": "Session not found"}, status=404)
+
+    # 클라이언트 세션 삭제
+    request.session.flush()
+    return redirect('signin')
 
 
