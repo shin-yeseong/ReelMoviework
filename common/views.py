@@ -148,6 +148,14 @@ sessions_collection = db['sessions']
 
 # 로그인 뷰
 def signin(request):
+    # 이미 로그인된 사용자인지 확인
+    session_id = request.session.get('session_id')
+    if session_id:
+        # MongoDB에서 세션 확인
+        session = sessions_collection.find_one({"_id": session_id})
+        if session:
+            # 이미 로그인된 경우 리디렉션
+            return redirect('login_success')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')

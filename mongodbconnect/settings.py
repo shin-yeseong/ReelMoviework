@@ -161,3 +161,5 @@ EMAIL_PORT = 587  # SMTP 서버 포트
 EMAIL_USE_TLS = True  # TLS 사용 여부
 EMAIL_HOST_USER = 'jjungjenny0210'  # 이메일 계정
 EMAIL_HOST_PASSWORD = 'olpu mycb acnq dpui'  # 이메일 비밀번호
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 브라우저 닫으면 세션 만료
