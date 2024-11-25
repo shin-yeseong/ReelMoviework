@@ -145,7 +145,7 @@ def upload_funding_movie(request):
                 funding_id = collection.insert_one(funding_data).inserted_id
                 print("MongoDB 저장 완료")
 
-                # 로그 저장
+                # 로그 저장 추가
                 try:
                     funding_upload_log = {
                         "user_id": str(user['_id']),
