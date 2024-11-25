@@ -1,49 +1,91 @@
-<!-- templates/home.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        .container {
-            text-align: center;
-        }
-        .button {
-            padding: 15px 25px;
-            font-size: 16px;
-            margin: 10px;
-            color: #fff;
-            background-color: #f04a00;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .button:hover {
-            background-color: #f04a00;
-        }
-    </style>
-</head>
+    <title>ReelVision</title>
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-xxx" crossorigin="anonymous">
+  </head>
 <body>
-    <div class="container">
-        <h1>Welcome to the Movie Platform</h1>
-        <a href="{% url 'funding_movie_page' %}" class="button">REEL</a>
-        <a href="{% url 'streaming_movie_page' %}" class="button">VISION</a>
-        <a href="{% url 'signup_page' %}" class="button">signup</a>
-        <a href="{% url 'login_page' %}" class="button">signin</a>
+  <section id="main">
+    <div id="header">
+      <a href="{% url 'home' %}">
+          <div class="logo">
+            <img src="{% static 'images/ReelVision.svg' %}" >
+          </div>
+      </a>
+
+
+        <div class="center"></div>
+
+        <div class="right">
+          <div class="box">
+            <div class="sign-box">
+              <a href="{% url 'funding_movie_page' %}" >Reel</a>
+              <p>|</p>
+              <a href="{% url 'streaming_movie_page' %}" >Vision</a>
+              <p>|</p>
+              <a href="{% url 'signup_page' %}" >SIGN-IN</a>
+              <p>|</p>
+              <a href="{% url 'login_page' %}" s>SIGN-UP</a>
+            </div>
+          </div>
+        </div>
+        </div>
     </div>
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
+
+
+
+      <div id="intro">
+        <div class="banner-text">
+          <h1>ReelVision:</h1>
+          <p>그들의 비전을 필름으로, 영화로 만들다.</p>
+          <a href="/archive" id="archive-button">Show Archive</a>
+
+        </div>
+      </div>
+
+
+
+
+    <div class="box-title">펀딩중인 작품
+      <a href="펀딩페이지링크" class="add-funding-btn">+</a>
+    </div>
+
+    <div id="box">
+      <a href="movieinfo.html" class="block">
+        <img src="{% static 'images/영화포스터1.jpeg' %}" alt="영화 포스터" class="poster-image">
+        <div class="info">
+          <h3 class="info-title">인터스텔라</h3>
+          <p class="info-description">간단한 줄거리: 우린 답을 찾을 것이다. 늘 그랬듯이.</p>
+          <p class="info-cast">등장인물: 매튜 맥커너히, 앤 해서웨이, 마이클 케인</p>
+        </div>
+      </a>
+      <a href="게시글링크" class="block">
+        <img src="{% static 'images/영화포스터2.jpg' %}" alt="영화 포스터" class="poster-image">
+        <div class="info">
+          <h3 class="info-title">베놈: 더 라스트 댄스</h3>
+          <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
+          <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
+        </div>
+      </a>
+      <a href="게시글링크" class="block">
+        <img src="{% static 'images/영화포스터3.jpg'%}" alt="영화 포스터" class="poster-image">
+        <div class="info">
+          <h3 class="info-title">어벤져스: 엔드게임</h3>
+          <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
+          <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer id="footer">
+    <div class="footer-content">
+        <p>© 2024 ReelVision | OSSProj | Team 2</p>
+    </div>
+</footer>
 </body>
 </html>
