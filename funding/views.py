@@ -26,6 +26,7 @@ poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
 # @login_required
 def upload_funding_movie(request):
+
     if request.method == 'POST':
         print(request.POST.getlist('genre'))  # POST 요청에서 genre 값이 어떻게 전달되는지 확인
 

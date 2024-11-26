@@ -64,6 +64,9 @@ from bson.objectid import ObjectId
 from django.utils.crypto import get_random_string
 from pymongo import MongoClient
 from django.http import JsonResponse
+
+app_name = 'common'
+
 # MongoDB 연결 설정
 client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority')
 db = client['mongodatabase']
@@ -276,14 +279,13 @@ def logout_view(request):
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.urls import reverse
+
+
 
 @login_required(login_url='signin')
 def dashboard(request):
-    print(f"User: {request.user}, Authenticated: {request.user.is_authenticated}")
-    return render(request, 'dashboard.html', {
-        "username": getattr(request.user, 'username', 'Guest'),
-        "email": getattr(request.user, 'email', 'No email'),
-        "role": getattr(request.user, 'role', 'No role'),
-    })
+    return redirect('mypage:mypage')
+
 
 

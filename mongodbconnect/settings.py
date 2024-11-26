@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'common',
     'mypage',
+
 ]
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
