@@ -172,8 +172,8 @@ EMAIL_HOST_PASSWORD = 'olpu mycb acnq dpui'  # 이메일 비밀번호
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = 'sessionid'
-SESSION_COOKIE_AGE = 1209600  # 2주 (초 단위)
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False # 브라우저 닫아도 세션 유지
+SESSION_COOKIE_AGE = 600  # 2주 (초 단위)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True# 브라우저 닫아도 세션 유지
 SESSION_SAVE_EVERY_REQUEST = True  # 요청마다 세션 저장
 
 AUTHENTICATION_BACKENDS = [
