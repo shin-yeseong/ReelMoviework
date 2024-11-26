@@ -19,6 +19,9 @@ def signup_page(request):
 def login_page(request):
     return render(request, 'signin.html')
 
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
 
 
 
