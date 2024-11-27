@@ -20,12 +20,35 @@ import json
 client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
 db = client_mongo['mongodatabase']  # 데이터베이스 선택
 collection = db['funding_fundingmovie']  # 컬렉션 선택
+funding_upload_user_collection = db['funding_upload_user']
+sessions_collection = db['sessions']
+users_collection = db['user']
+
 # MongoDB 클라이언트 및 GridFS 설정
 movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
 # @login_required
 def upload_funding_movie(request):
+    # 세션 ID 확인
+    session_id = request.session.get('session_id')
+    if not session_id:
+        return render(request, 'signin.html')
+
+    # MongoDB에서 세션 확인
+    session = sessions_collection.find_one({"_id": session_id})
+    if not session:
+        # return render(request, 'signin.html')
+
+    # 사용자 정보 가져오기
+    user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        # return render(request, 'signin.html')
+
+    # 사용자 역할 확인
+    if user.get('role') != 'host':
+        return HttpResponse("You do not have permission to upload funding movies.", status=403)
+
     if request.method == 'POST':
         print(request.POST.getlist('genre'))  # POST 요청에서 genre 값이 어떻게 전달되는지 확인
 
@@ -119,17 +142,41 @@ def upload_funding_movie(request):
                                   {'form': form, 'error': '이미지 파일 저장 중 오류가 발생했습니다.'})
             # MongoDB에 데이터 저장
             try:
-                collection.insert_one(funding_data)
+                funding_id = collection.insert_one(funding_data).inserted_id
                 print("MongoDB 저장 완료")
-                return redirect('funding:upload_success')
+
+                # 로그 저장 추가_1125
+                try:
+                    funding_upload_log = {
+                        "user_id": str(user["_id"]),
+                        "username": user["username"],
+                        "uploaded_funding_id": str(funding_id),
+                        "title": funding_data["title"],
+                        "upload_date": datetime.now(),
+                    }
+                    funding_upload_user_collection.insert_one(funding_upload_log)
+                    print("업로드 로그 저장 완료")
+                except Exception as log_error:
+                    print("업로드 로그 저장 중 오류:", log_error)
+                    return render(
+                        request,
+                        "upload_funding.html",
+                        {"form": form, "error": "로그 저장 중 오류가 발생했습니다."},
+                    )
+
+                return redirect("funding:upload_success")
             except Exception as e:
                 print("MongoDB 데이터 저장 중 오류 발생:", e)
-                return render(request, 'upload_success.html', {'form': form, 'error': '데이터 저장 중 오류가 발생했습니다.'})
+                return render(
+                    request,
+                    "upload_success.html",
+                    {"form": form, "error": "데이터 저장 중 오류가 발생했습니다."},
+                )
         else:
             print("폼 유효성 검사 실패:", form.errors)
     else:
         form = FundingMovieForm()
-    return render(request, 'upload_funding.html', {'form': form})
+    return render(request, "upload_funding.html", {"form": form})
 
 def funding_detail(request, movie_id):
     movie = get_object_or_404(FundingMovie, id=movie_id)
