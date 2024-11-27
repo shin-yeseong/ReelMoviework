@@ -10,26 +10,38 @@ from funding.models import FundingMovie
 from pymongo import MongoClient
 from mongodbconnect.settings import client
 from django.contrib.auth.models import User
-
 # MongoDB 클라이언트 및 데이터베이스 설정
 db = client['mongodatabase']
 collection = db['funding_fundingmovie']
 
 def ensure_django_user(request_user):
     """
-    MongoDBUser 객체를 Django User 객체로 변환.
+    MongoDBUser 객체를 Django User 객체로 변환 및 동기화.
     """
     if not isinstance(request_user, User):  # MongoDBUser일 경우 변환
         try:
             django_user, created = User.objects.get_or_create(
                 username=request_user.username,
-                defaults={'email': getattr(request_user, 'email', '')}
+                defaults={
+                    'email': request_user.email,
+                    'first_name': getattr(request_user, 'first_name', ''),
+                    'last_name': getattr(request_user, 'last_name', ''),
+                }
             )
+
+            # 이미 존재하는 경우 MongoDB 데이터와 동기화
+            if not created:
+                django_user.email = request_user.email
+                django_user.first_name = getattr(request_user, 'first_name', '')
+                django_user.last_name = getattr(request_user, 'last_name', '')
+                django_user.save()
+
             return django_user
         except Exception as e:
-            print(f"Error ensuring Django User: {e}")
+            print(f"ensure_django_user 에러: {e}")
             return None
     return request_user
+
 
 
 @login_required
@@ -82,20 +94,37 @@ def purchased_movies(request):
     return render(request, 'mypage/purchased_movies.html', {'movies': page_movies})
 
 
+# MongoDB 연결 설정
+client = MongoClient('your_mongo_connection_string')
+db = client['mongodatabase']
+users_collection = db['user']
+
+
 @login_required
 def mypage(request):
-    """
-    마이페이지 메인 화면.
-    """
-    user = ensure_django_user(request.user)
-    if user is None:
-        return redirect('signin')
+    user_id = request.session.get('user_id')
+    print("세션에서 가져온 user_id:", user_id)
 
-    # 구매한 영화 데이터
-    purchased_movies = StreamingMovie.objects.filter(viewers=user).only('title', 'genre', 'time')
+    if not user_id:
+        return render(request, 'mypage/mypage.html', {'error': 'No user ID in session'})
 
-    return render(request, 'mypage/mypage.html', {'user': user, 'movies': purchased_movies})
+    try:
+        user_data = users_collection.find_one({"_id": user_id})  # ObjectId 제거
+        if not user_data:
+            print(f"사용자를 찾을 수 없습니다. user_id: {user_id}")
+            return render(request, 'mypage/mypage.html', {'error': 'User not found in MongoDB'})
 
+        # 데이터 변환
+        if 'last_login' in user_data:
+            user_data['last_login'] = user_data['last_login'].strftime('%Y-%m-%d %H:%M:%S')
+        if 'date_joined' in user_data:
+            user_data['date_joined'] = user_data['date_joined'].strftime('%Y-%m-%d %H:%M:%S')
+
+        print("MongoDB에서 가져온 사용자 데이터:", user_data)
+        return render(request, 'mypage/mypage.html', {'user': user_data})
+    except Exception as e:
+        print(f"Error fetching user data: {e}")
+        return render(request, 'mypage/mypage.html', {'error': 'An error occurred while fetching user data'})
 
 @login_required
 def update_profile(request):
@@ -112,6 +141,9 @@ def update_profile(request):
             form.save()
             messages.success(request, '프로필이 성공적으로 업데이트되었습니다.')
             return redirect('mypage:mypage')
+        else:
+            print(form.errors)  # 디버깅: 폼 오류 출력
+            messages.error(request, '프로필 업데이트에 실패했습니다.')
     else:
         form = ProfileUpdateForm(instance=user)
 
@@ -135,6 +167,7 @@ def change_password(request):
             messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
             return redirect('mypage:mypage')
         else:
+            print(form.errors)  # 디버깅: 폼 오류 출력
             messages.error(request, '비밀번호 변경에 실패했습니다.')
     else:
         form = PasswordChangeForm(user=user)

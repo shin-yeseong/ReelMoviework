@@ -11,48 +11,56 @@
     <!-- 내 정보 -->
     <div>
         <h2>Your Profile</h2>
+        {% if user and user.is_authenticated %}
         <table>
             <tr>
                 <th>Username</th>
-                <td>{{ user.username }}</td>
+                <td>{{ user.username|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>First Name</th>
-                <td>{{ user.first_name }}</td>
+                <td>{{ user.first_name|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Last Name</th>
-                <td>{{ user.last_name }}</td>
+                <td>{{ user.last_name|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Email</th>
-                <td>{{ user.email }}</td>
+                <td>{{ user.email|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Date of Birth</th>
-                <td>{{ user.date_of_birth }}</td>
+                <td>{{ user.date_of_birth|date:"Y-m-d"|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Gender</th>
-                <td>{{ user.gender }}</td>
-            </tr>
-            <tr>
-                <th>Role</th>
-                <td>{{ user.role }}</td>
+                <td>{{ user.gender|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Bank</th>
-                <td>{{ user.bank }}</td>
+                <td>{{ user.bank|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Phone Number</th>
-                <td>{{ user.phone_number }}</td>
+                <td>{{ user.phone_number|default:"Not provided" }}</td>
             </tr>
             <tr>
                 <th>Address</th>
-                <td>{{ user.address }}</td>
+                <td>{{ user.address|default:"Not provided" }}</td>
+            </tr>
+            <tr>
+                <th>Last Login</th>
+                <td>{{ user.last_login|default:"Not provided" }}</td>
+            </tr>
+            <tr>
+                <th>Date Joined</th>
+                <td>{{ user.date_joined|default:"Not provided" }}</td>
             </tr>
         </table>
+        {% else %}
+        <p style="color: red;">Failed to load user information. Please check your session or login again.</p>
+        {% endif %}
 
         <!-- 수정 버튼 -->
         <div>
@@ -64,30 +72,34 @@
     <!-- 구매한 영화 섹션 -->
     <div>
         <h2>Purchased Movies</h2>
+        {% if movies %}
         <ul>
             {% for movie in movies %}
             <li>{{ movie.title }} ({{ movie.time }} minutes) - Genre: {{ movie.genre|join:", " }}</li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p>You haven't purchased any movies yet.</p>
+        {% endif %}
     </div>
 
     <!-- 후원한 영화 섹션 -->
     <div>
         <h2>Funded Movies</h2>
         {% if funded_movies %}
-            <ul>
-                {% for movie in funded_movies %}
-                <li>
-                    <h3>{{ movie.title }}</h3>
-                    <p>Genre: {{ movie.genre|join:", " }}</p>
-                    <p>Duration: {{ movie.time }} minutes</p>
-                    <p>Funding Amount: {{ movie.total_funding_amount }}</p>
-                    <p>Funding Deadline: {{ movie.funding_deadline }}</p>
-                </li>
-                {% endfor %}
-            </ul>
+        <ul>
+            {% for movie in funded_movies %}
+            <li>
+                <h3>{{ movie.title }}</h3>
+                <p>Genre: {{ movie.genre|join:", " }}</p>
+                <p>Duration: {{ movie.time }} minutes</p>
+                <p>Funding Amount: {{ movie.total_funding_amount }}</p>
+                <p>Funding Deadline: {{ movie.funding_deadline|date:"Y-m-d" }}</p>
+            </li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p>You haven't funded any movies yet.</p>
+        <p>You haven't funded any movies yet.</p>
         {% endif %}
     </div>
 
@@ -95,19 +107,19 @@
     <div>
         <h2>My Projects</h2>
         {% if my_projects %}
-            <ul>
-                {% for project in my_projects %}
-                <li>
-                    <h3>{{ project.title }}</h3>
-                    <p>Status: {{ project.status }}</p>
-                    <p>Total Funding: {{ project.total_funding_amount }}</p>
-                    <p>Funding Deadline: {{ project.funding_deadline }}</p>
-                    <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
-                </li>
-                {% endfor %}
-            </ul>
+        <ul>
+            {% for project in my_projects %}
+            <li>
+                <h3>{{ project.title }}</h3>
+                <p>Status: {{ project.status }}</p>
+                <p>Total Funding: {{ project.total_funding_amount }}</p>
+                <p>Funding Deadline: {{ project.funding_deadline|date:"Y-m-d" }}</p>
+                <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
+            </li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p>You haven't registered any projects yet.</p>
+        <p>You haven't registered any projects yet.</p>
         {% endif %}
     </div>
 </body>
