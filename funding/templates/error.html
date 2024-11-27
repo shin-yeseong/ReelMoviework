@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <script>
+        // Alert 메시지 출력 후 페이지 리다이렉션
+        window.onload = function() {
+            alert("{{ alert_message }}");
+            window.location.href = "{{ redirect_url }}";  // 설정된 URL로 이동
+        };
+    </script>
+</head>
+<body>
+    <h1>Error</h1>
+    <p>{{ alert_message }}</p>
+</body>
+</html>

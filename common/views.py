@@ -64,6 +64,9 @@ from bson.objectid import ObjectId
 from django.utils.crypto import get_random_string
 from pymongo import MongoClient
 from django.http import JsonResponse
+
+app_name = 'common'
+
 # MongoDB 연결 설정
 client = MongoClient('mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority')
 db = client['mongodatabase']
@@ -146,51 +149,42 @@ def signup(request):
 
 sessions_collection = db['sessions']
 
-# 로그인 뷰
 def signin(request):
-    # 이미 로그인된 사용자인지 확인
-    session_id = request.session.get('session_id')
-    if session_id:
-        # MongoDB에서 세션 확인
-        session = sessions_collection.find_one({"_id": session_id})
-        if session:
-            # 이미 로그인된 경우 리디렉션
-            return redirect('login_success')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # MongoDB에서 사용자 조회
         user = users_collection.find_one({'username': username})
 
         if user:
             stored_password = user.get('password')
 
-            # 비밀번호 확인
             if check_password(password, stored_password):
-                # 마지막 로그인 시간 업데이트
                 users_collection.update_one(
                     {'username': username},
                     {'$set': {'last_login': datetime.now()}}
                 )
 
-                # 세션 데이터 생성
                 session_data = {
                     "user_id": str(user['_id']),
                     "user_role": user['role'],
                     "last_login": datetime.now().isoformat(),
                     "csrf_token": get_random_string(32),
-                    "expiry": (datetime.now() + timedelta(weeks=2)).isoformat()  # 2주 뒤 만료
+                    "expiry": (datetime.now() + timedelta(weeks=2)).isoformat()
                 }
 
-                # MongoDB의 sessions 컬렉션에 저장
                 session_id = get_random_string(32)
                 sessions_collection.insert_one({"_id": session_id, **session_data})
+                print(f"Session data saved to MongoDB: {session_data}")
 
-                # 클라이언트에 세션 ID 저장
                 request.session['session_id'] = session_id
+                request.session['user_id'] = str(user['_id'])
+                request.session.save()  # 세션 강제 저장
+                print(f"Session ID set: {request.session.get('session_id')}")
 
-                return redirect('login_success')
+                print(f"Authenticated user: {user}")  # 디버깅
+
+                return redirect(request.GET.get('next', 'dashboard'))
             else:
                 return render(request, 'signin.html', {'error': "Invalid password"})
         else:
@@ -259,15 +253,39 @@ def logout_view(request):
     # 세션 ID 가져오기
     session_id = request.session.get('session_id')
     if not session_id:
-        return redirect('signin')  # 세션이 없으면 바로 리디렉트
+        print("No session ID found for logout.")
+        return redirect('signin')
 
-    # MongoDB에서 세션 삭제
-    result = sessions_collection.delete_one({"_id": session_id})
-    if result.deleted_count == 0:
+    # MongoDB에서 현재 세션 ID로 세션 정보 조회
+    session = sessions_collection.find_one({"_id": session_id})
+    if not session:
+        print(f"Session ID {session_id} not found in MongoDB.")
         return JsonResponse({"message": "Session not found"}, status=404)
+
+    # 현재 사용자 ID 가져오기
+    user_id = session.get("user_id")
+    if not user_id:
+        print("No user ID found in session.")
+        return JsonResponse({"message": "User ID not found in session"}, status=404)
+
+    # MongoDB에서 해당 사용자 ID의 모든 세션 삭제
+    result = sessions_collection.delete_many({"user_id": user_id})
+    print(f"Deleted {result.deleted_count} sessions for user_id: {user_id}")
 
     # 클라이언트 세션 삭제
     request.session.flush()
+    print(f"All sessions for user_id {user_id} deleted and client session flushed.")
     return redirect('signin')
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.urls import reverse
+
+
+
+@login_required(login_url='signin')
+def dashboard(request):
+    return redirect('mypage:mypage')
+
 
 
