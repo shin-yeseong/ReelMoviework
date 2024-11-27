@@ -12,8 +12,9 @@ from datetime import datetime
 from mongodbconnect import settings
 from pymongo import MongoClient
 import gridfs
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 import json
+i
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
@@ -28,7 +29,7 @@ users_collection = db["user"]
 movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
-@login_required(login_url='signin')
+# @login_required
 def upload_funding_movie(request):
     # 세션 ID 확인
     # session_id = request.session.get('session_id')
