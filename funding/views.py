@@ -155,17 +155,41 @@ def upload_funding_movie(request):
                                   {'form': form, 'error': '이미지 파일 저장 중 오류가 발생했습니다.'})
             # MongoDB에 데이터 저장
             try:
-                collection.insert_one(funding_data)
+                funding_id = collection.insert_one(funding_data).inserted_id
                 print("MongoDB 저장 완료")
-                return redirect('funding:upload_success')
+
+                # 로그 저장 추가_1125
+                try:
+                    funding_upload_log = {
+                        "user_id": str(user["_id"]),
+                        "username": user["username"],
+                        "uploaded_funding_id": str(funding_id),
+                        "title": funding_data["title"],
+                        "upload_date": datetime.now(),
+                    }
+                    funding_upload_user_collection.insert_one(funding_upload_log)
+                    print("업로드 로그 저장 완료")
+                except Exception as log_error:
+                    print("업로드 로그 저장 중 오류:", log_error)
+                    return render(
+                        request,
+                        "upload_funding.html",
+                        {"form": form, "error": "로그 저장 중 오류가 발생했습니다."},
+                    )
+
+                return redirect("funding:upload_success")
             except Exception as e:
                 print("MongoDB 데이터 저장 중 오류 발생:", e)
-                return render(request, 'upload_success.html', {'form': form, 'error': '데이터 저장 중 오류가 발생했습니다.'})
+                return render(
+                    request,
+                    "upload_success.html",
+                    {"form": form, "error": "데이터 저장 중 오류가 발생했습니다."},
+                )
         else:
             print("폼 유효성 검사 실패:", form.errors)
     else:
         form = FundingMovieForm()
-    return render(request, 'upload_funding.html', {'form': form})
+    return render(request, "upload_funding.html", {"form": form})
 
 def movie_list(request):
     movies = list(collection.find()) # DB에서 모든 영화 데이터 가져오기
