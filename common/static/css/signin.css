@@ -55,7 +55,7 @@ body {
 
 #login-form > input::placeholder {
   color: #f04a00;
-  border-color: f04a00;
+  border-color: #f04a00;
 }
 #login-form > input[type="submit"] {
   color: #fff;
@@ -82,27 +82,26 @@ body {
   border: none;
   cursor: pointer;
   text-align: center;
-  margin: 20px 0; /* 위아래 여백 조정 */
+  margin: 20px 0;
 }
 
 #login-form > button:hover {
   background-color: #d03e00;
 }
 
-/* 회원가입 링크 */
 .signup-link a {
-  display: block; /* 정렬 문제를 방지 */
-  width: 100%; /* 회원가입 버튼 크기 일치 */
-  height: 48px; /* 동일 높이 */
-  line-height: 48px; /* 텍스트 정렬 */
+  display: block;
+  width: 100%;
+  height: 48px;
+  line-height: 48px;
   color: #fff;
   font-size: 16px;
   background-color: #f04a00;
   border-radius: 6px;
   text-decoration: none;
   cursor: pointer;
-  margin-top: 10px; /* 위아래 간격 조정 */
-  text-align: center; /* 텍스트 중앙 정렬 */
+  margin-top: 10px;
+  text-align: center;
 }
 
 .signup-link a:hover {
@@ -139,4 +138,4 @@ body {
 }
 
 #login-form > input {
-  color: #f04a00;
+  color: #f04a00;}

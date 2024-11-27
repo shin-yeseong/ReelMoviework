@@ -9,7 +9,7 @@ urlpatterns = [
     path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
     path('login-success/', views.login_success, name='login_success'),
     path('logout/', views.logout_view, name='logout'),
-    path('mypage/', include('mypage.urls'))
+    path('mypage/', include('mypage.urls')),
 
 
 ]
