@@ -1,11 +1,54 @@
-<!-- templates/signin.html -->
-<form method="post">
-    {% csrf_token %}
-    <label for="username">ID:</label>
-    <input type="text" name="username" id="username" required>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReelVision: 로그인</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/signin.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="login-banner">
+        <a href="{% url 'home' %}">
+          <img
+            src="{% static 'images/ReelVision.svg' %}"
+            style="width: 350px; height: 150px"
+            alt="ReelVision 로고"
+          />
+        </a>
+      </div>
+      <div class="login-wrapper">
+        <form method="post" id="login-form">
+          {% csrf_token %}
+          <label for="username"></label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="아이디"
+            required
+          />
 
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required>
+          <label for="password"></label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="비밀번호"
+            required
+          />
 
-    <button type="submit">Sign In</button>
-</form>
+          <button type="submit">로그인</button>
+        </form>
+
+        <div class="signup-link">
+          <a href="{% url 'signup' %}">회원가입</a>
+        </div>
+      </div>
+
+      <div id="login-below1"><b>ReelVision:</b></div>
+      <div id="login-below2">그들의 비전을 필름으로, 영화로 만들다.</div>
+    </div>
+  </body>
+</html>
