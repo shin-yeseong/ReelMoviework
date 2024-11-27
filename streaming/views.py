@@ -1,10 +1,12 @@
 # streaming/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import FileResponse, Http404, HttpResponse
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+
+from common.views import sessions_collection, users_collection
 from mongodbconnect.settings import client
 from .models import StreamingMovie
 from .forms import StreamingMovieForm
@@ -23,8 +25,14 @@ collection = db['streaming_streamingmovie']  # 컬렉션 선택
 streaming_movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 streaming_poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
-# @login_required
+@login_required(login_url='signin')
 def upload_streaming_movie(request):
+    user_role = request.user.role
+
+    if user_role != 'host':
+        return render(request, 'permission_denied.html')
+
+
     if request.method == 'POST':
         print(request.POST.getlist('genre'))  # POST 요청에서 genre 값이 어떻게 전달되는지 확인
 
@@ -126,7 +134,7 @@ def streaming_movie_list(request):
     movies = list(collection.find())
     return render(request, 'streaming_movie_list.html', {'movies': movies})
 
-
+@login_required(login_url='signin')
 def streaming_movie_detail(request, movie_id):
     try:
         # UUID로 저장된 경우 문자열로 조회

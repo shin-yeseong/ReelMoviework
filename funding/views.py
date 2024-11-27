@@ -34,7 +34,7 @@ def upload_funding_movie(request):
     session_id = request.session.get('session_id')
     if not session_id:
         # return redirect('common:signin') # 로그인 페이지로 리다이렉트
-        return render(request, 'error.html', {
+        return render(request, 'permission_denied.html', {
             'alert_message': 'You do not have permission to upload funding movies.',
             'redirect_url': '/funding-page/'  # 올바른 경로로 변경
         })
@@ -42,7 +42,7 @@ def upload_funding_movie(request):
     # MongoDB에서 세션 확인
     session = sessions_collection.find_one({"_id": session_id})
     if not session:
-        return render(request, 'error.html', {
+        return render(request, 'permission_denied.html', {
             'alert_message': 'You do not have permission to upload funding movies.',
             'redirect_url': '/funding-page/'  # 올바른 경로로 변경
         })
@@ -50,14 +50,14 @@ def upload_funding_movie(request):
     # 사용자 정보 가져오기
     user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
     if not user:
-        return render(request, 'error.html', {
+        return render(request, 'permission_denied.html', {
             'alert_message': 'You do not have permission to upload funding movies.',
             'redirect_url': '/funding-page/'  # 올바른 경로로 변경
         })
 
     # 사용자 역할 확인
     if user.get('role') != 'host':
-        return render(request, 'error.html', {
+        return render(request, 'permission_denied.html', {
             'alert_message': 'You do not have permission to upload funding movies.',
             'redirect_url': '/funding-page/'  # 올바른 경로로 변경
         })
