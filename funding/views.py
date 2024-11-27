@@ -12,7 +12,7 @@ from datetime import datetime
 from mongodbconnect import settings
 from pymongo import MongoClient
 import gridfs
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 import json
 
 # MongoDB 클라이언트 및 GridFS 설정
@@ -28,39 +28,46 @@ users_collection = db["user"]
 movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
-# @login_required
+@login_required(login_url='signin')
 def upload_funding_movie(request):
     # 세션 ID 확인
-    session_id = request.session.get('session_id')
-    if not session_id:
-        # return redirect('common:signin') # 로그인 페이지로 리다이렉트
-        return render(request, 'error.html', {
-            'alert_message': 'You do not have permission to upload funding movies.',
-            'redirect_url': '/funding-page/'  # 올바른 경로로 변경
-        })
+    # session_id = request.session.get('session_id')
+    # if not session_id:
+    #     # return redirect('common:signin') # 로그인 페이지로 리다이렉트
+    #     return render(request, 'error.html', {
+    #         'alert_message': 'You do not have permission to upload funding movies.',
+    #         'redirect_url': '/funding-page/'  # 올바른 경로로 변경
+    #     })
+    #
+    # # MongoDB에서 세션 확인
+    # session = sessions_collection.find_one({"_id": session_id})
+    # if not session:
+    #     return render(request, 'error.html', {
+    #         'alert_message': 'You do not have permission to upload funding movies.',
+    #         'redirect_url': '/funding-page/'  # 올바른 경로로 변경
+    #     })
+    #
+    # # 사용자 정보 가져오기
+    # user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
+    # if not user:
+    #     return render(request, 'error.html', {
+    #         'alert_message': 'You do not have permission to upload funding movies.',
+    #         'redirect_url': '/funding-page/'  # 올바른 경로로 변경
+    #     })
+    #
+    # # 사용자 역할 확인
+    # if user.get('role') != 'host':
+    #     return render(request, 'error.html', {
+    #         'alert_message': 'You do not have permission to upload funding movies.',
+    #         'redirect_url': '/funding-page/'  # 올바른 경로로 변경
+    #     })
 
-    # MongoDB에서 세션 확인
-    session = sessions_collection.find_one({"_id": session_id})
-    if not session:
-        return render(request, 'error.html', {
-            'alert_message': 'You do not have permission to upload funding movies.',
-            'redirect_url': '/funding-page/'  # 올바른 경로로 변경
-        })
+    user = request.user
+    user_role = user.role
+    username = user.username
 
-    # 사용자 정보 가져오기
-    user = users_collection.find_one({"_id": ObjectId(session['user_id'])})
-    if not user:
-        return render(request, 'error.html', {
-            'alert_message': 'You do not have permission to upload funding movies.',
-            'redirect_url': '/funding-page/'  # 올바른 경로로 변경
-        })
-
-    # 사용자 역할 확인
-    if user.get('role') != 'host':
-        return render(request, 'error.html', {
-            'alert_message': 'You do not have permission to upload funding movies.',
-            'redirect_url': '/funding-page/'  # 올바른 경로로 변경
-        })
+    if user_role != 'host':
+        return HttpResponseForbidden("권한이 없습니다.")
 
     if request.method == 'POST':
         print(request.POST.getlist('genre'))  # POST 요청에서 genre 값이 어떻게 전달되는지 확인
@@ -161,8 +168,7 @@ def upload_funding_movie(request):
                 # 로그 저장 추가_1125
                 try:
                     funding_upload_log = {
-                        "user_id": str(user["_id"]),
-                        "username": user["username"],
+                        "username": username,
                         "uploaded_funding_id": str(funding_id),
                         "title": funding_data["title"],
                         "upload_date": datetime.now(),
