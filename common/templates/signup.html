@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ReelVision: 회원가입</title>
-    <link rel="stylesheet" href="signup.css" />
+    {% load static %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
   </head>
   <body>
     <div class="container">
       <div id="signup-banner">
         <a href="home.html">
           <img
-            src="../../img/ReelVision.svg"
+            src="{% static 'images/ReelVision.svg' %}"
             style="width: 350px; height: 150px"
             alt="로고"
           />
