@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Denied</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #141414;
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        h1 {
+            color: #ff7518;
+            margin-bottom: 20px;
+            font-size: 3.5em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #ff7518;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #f04a00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>죄송합니다.</h1>
+        <p>영화를 업로드하실 권한이 없습니다.</p>
+        <a href="javascript:history.back()" class="button">이전 페이지로</a>
+    </div>
+</body>
+</html>

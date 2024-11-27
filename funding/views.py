@@ -14,7 +14,6 @@ from pymongo import MongoClient
 import gridfs
 from django.http import HttpResponse
 import json
-i
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
@@ -29,7 +28,7 @@ users_collection = db["user"]
 movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
-# @login_required
+@login_required(login_url='signin')
 def upload_funding_movie(request):
     # 세션 ID 확인
     # session_id = request.session.get('session_id')
@@ -63,12 +62,11 @@ def upload_funding_movie(request):
     #         'redirect_url': '/funding-page/'  # 올바른 경로로 변경
     #     })
 
-    user = request.user
-    user_role = user.role
-    username = user.username
+    user_role = request.user.role
+    username = request.user.username
 
     if user_role != 'host':
-        return HttpResponseForbidden("권한이 없습니다.")
+        return render(request, 'permission_denied.html')
 
     if request.method == 'POST':
         print(request.POST.getlist('genre'))  # POST 요청에서 genre 값이 어떻게 전달되는지 확인
