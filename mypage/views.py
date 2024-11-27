@@ -95,7 +95,11 @@ def purchased_movies(request):
 
 
 # MongoDB 연결 설정
-client = MongoClient('your_mongo_connection_string')
+client = MongoClient(
+    'your_mongo_connection_string',
+    maxPoolSize=50,  # 최대 연결 풀 크기
+    serverSelectionTimeoutMS=5000  # 연결 타임아웃 (ms)
+)
 db = client['mongodatabase']
 users_collection = db['user']
 
