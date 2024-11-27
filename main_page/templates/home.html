@@ -5,84 +5,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReelVision</title>
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-xxx" crossorigin="anonymous">
-  </head>
+</head>
 <body>
-  <section id="main">
+<section id="main">
     <div id="header">
-      <a href="{% url 'home' %}">
-          <div class="logo">
-            <img src="{% static 'images/ReelVision.svg' %}" >
-          </div>
-      </a>
-
+        <a href="{% url 'home' %}">
+            <div class="logo">
+                <img src="{% static 'images/ReelVision.svg' %}" >
+            </div>
+        </a>
 
         <dxiv class="center"></dxiv>
 
         <div class="right">
-          <div class="box">
-            <div class="sign-box">
-              <a href="{% url 'funding_movie_page' %}" >Reel</a>
-              <p>|</p>
-              <a href="{% url 'streaming_movie_page' %}" >Vision</a>
-              <p>|</p>
-              <a href="{% url 'signup_page' %}" >SIGN-UP</a>
-              <p>|</p>
-              <a href="{% url 'login_page' %}" s>SIGN-IN</a>
+            <div class="box">
+                <div class="sign-box">
+                    <a href="{% url 'funding_movie_page' %}">Reel</a>
+                    <p>|</p>
+                    <a href="{% url 'streaming_movie_page' %}">Vision</a>
+                    <p>|</p>
+                    {% if request.user.is_authenticated %}
+<a href="{% url 'mypage:mypage' %}">MyPage</a>                        <p>|</p>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'signup' %}">SIGN-UP</a>
+                        <p>|</p>
+                        <a href="{% url 'signin' %}">SIGN-IN</a>
+                    {% endif %}
+                </div>
             </div>
-          </div>
-        </div>
         </div>
     </div>
 
-
-
-      <div id="intro">
+    <div id="intro">
         <div class="banner-text">
-          <h1>ReelVision:</h1>
-          <p>그들의 비전을 필름으로, 영화로 만들다.</p>
-          <a href="/archive" id="archive-button">Show Archive</a>
-
+            <h1>ReelVision:</h1>
+            <p>그들의 비전을 필름으로, 영화로 만들다.</p>
+            <a href="/archive" id="archive-button">Show Archive</a>
         </div>
-      </div>
-
-
-
+    </div>
 
     <div class="box-title">펀딩중인 작품
-      <a href="펀딩페이지링크" class="add-funding-btn">+</a>
+        <a href="펀딩페이지링크" class="add-funding-btn">+</a>
     </div>
 
     <div id="box">
-      <a href="movieinfo.html" class="block">
-        <img src="{% static 'images/영화포스터1.jpeg' %}" alt="영화 포스터" class="poster-image">
-        <div class="info">
-          <h3 class="info-title">인터스텔라</h3>
-          <p class="info-description">간단한 줄거리: 우린 답을 찾을 것이다. 늘 그랬듯이.</p>
-          <p class="info-cast">등장인물: 매튜 맥커너히, 앤 해서웨이, 마이클 케인</p>
-        </div>
-      </a>
-      <a href="게시글링크" class="block">
-        <img src="{% static 'images/영화포스터2.jpg' %}" alt="영화 포스터" class="poster-image">
-        <div class="info">
-          <h3 class="info-title">베놈: 더 라스트 댄스</h3>
-          <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
-          <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
-        </div>
-      </a>
-      <a href="게시글링크" class="block">
-        <img src="{% static 'images/영화포스터3.jpg'%}" alt="영화 포스터" class="poster-image">
-        <div class="info">
-          <h3 class="info-title">어벤져스: 엔드게임</h3>
-          <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
-          <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
-        </div>
-      </a>
+        <a href="movieinfo.html" class="block">
+            <img src="{% static 'images/영화포스터1.jpeg' %}" alt="영화 포스터" class="poster-image">
+            <div class="info">
+                <h3 class="info-title">인터스텔라</h3>
+                <p class="info-description">간단한 줄거리: 우린 답을 찾을 것이다. 늘 그랬듯이.</p>
+                <p class="info-cast">등장인물: 매튜 맥커너히, 앤 해서웨이, 마이클 케인</p>
+            </div>
+        </a>
+        <a href="게시글링크" class="block">
+            <img src="{% static 'images/영화포스터2.jpg' %}" alt="영화 포스터" class="poster-image">
+            <div class="info">
+                <h3 class="info-title">베놈: 더 라스트 댄스</h3>
+                <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
+                <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
+            </div>
+        </a>
+        <a href="게시글링크" class="block">
+            <img src="{% static 'images/영화포스터3.jpg' %}" alt="영화 포스터" class="poster-image">
+            <div class="info">
+                <h3 class="info-title">어벤져스: 엔드게임</h3>
+                <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
+                <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
+            </div>
+        </a>
     </div>
-  </section>
+</section>
 
-  <footer id="footer">
+<footer id="footer">
     <div class="footer-content">
         <p>© 2024 ReelVision | OSSProj | Team 2</p>
     </div>

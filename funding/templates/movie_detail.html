@@ -80,14 +80,33 @@
         <div class="detail-row"><span class="label">Total Funding Amount:</span> ₩{{ movie.total_funding_amount }}</div>
         <div class="detail-row"><span class="label">Backers:</span> {{ movie.backers|length }}명</div>
 
-                <!-- Funding Options -->
+        <!-- Funding Options -->
         <div class="detail-row"><span class="label">Funding Options:</span></div>
-        <ul>
+        <div>
             {% for option in movie.funding_options %}
-                <li>₩{{ option.amount }} - {{ option.benefit }}</li>
+                <button class="funding-button"
+                        onclick="startPayment({{ option.amount }}, '{{ option.benefit }}')">
+                    ₩{{ option.amount }} - {{ option.benefit }}
+                </button>
             {% endfor %}
-        </ul>
+        </div>
     </div>
+    <style>
+        .funding-button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #f04a00;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .funding-button:hover {
+            background-color: #d03a00;
+        }
+    </style>
 </body>
 </html>
 

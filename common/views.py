@@ -285,7 +285,7 @@ from django.urls import reverse
 
 @login_required(login_url='signin')
 def dashboard(request):
-    return redirect('mypage:mypage')
+    return redirect('home')
 
 
 
