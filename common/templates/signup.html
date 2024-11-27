@@ -1,50 +1,116 @@
-<form method="post">
-    {% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReelVision: 회원가입</title>
+    {% load static %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+  </head>
+  <body>
+    <div class="container">
+      <div id="signup-banner">
+        <a href="{% url 'home' %}">
+          <img
+            src="{% static 'images/ReelVision.svg' %}"
+            style="width: 350px; height: 150px"
+            alt="로고"
+          />
+        </a>
+      </div>
+      <div class="signup-wrapper">
+        <form id="signup-form" method="post">
+          {% csrf_token %}
 
-     {% if error %}
-        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
-            {{ error }}
+          <label>아이디</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="아이디"
+            required
+          />
+
+          <label>이메일</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="이메일"
+            required
+          />
+
+          <label>비밀번호</label>
+          <input
+            type="password"
+            id="userPassword"
+            name="password"
+            placeholder="비밀번호"
+            required
+          />
+
+          <label>이름</label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            placeholder="이름"
+            required
+          />
+
+          <label>성</label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            placeholder="성"
+            required
+          />
+
+          <label>생년월일</label>
+          <input type="date" id="date_of_birth" name="date_of_birth" required />
+
+          <label>성별</label>
+          <select id="gender" name="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+
+          <label>Role</label>
+          <select id="role" name="role">
+            <option value="male">Viewer</option>
+            <option value="female">Host</option>
+          </select>
+
+          <label>은행/계좌번호</label>
+          <input
+            type="text"
+            id="bank"
+            name="bank"
+            placeholder="은행/계좌번호"
+            required
+          />
+
+          <label>전화번호</label>
+          <input
+            type="text"
+            id="phone_number"
+            name="phone_number"
+            placeholder="전화번호"
+          />
+
+          <label>주소</label>
+          <input type="text" id="address" name="address" placeholder="주소" />
+
+          <input type="submit" value="회원가입" />
+        </form>
+
+        <div class="login-link">
+          <a href="로그인url">로그인</a>
         </div>
-    {% endif %}
-
-    <label>Username:</label>
-    <input type="text" name="username" required><br>
-
-    <label>Email:</label>
-    <input type="email" name="email" required><br>
-
-    <label>Password:</label>
-    <input type="password" name="password" required><br>
-
-    <label>First Name:</label>
-    <input type="text" name="first_name"><br>
-
-    <label>Last Name:</label>
-    <input type="text" name="last_name"><br>
-
-    <label>Date of Birth (YYYY-MM-DD):</label>
-    <input type="text" name="date_of_birth"><br>
-
-    <label>Gender:</label>
-    <select name="gender">
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-    </select><br>
-
-     <label>Role:</label>
-    <select name="role">
-        <option value="viewer">Viewer</option>
-        <option value="host">Host</option>
-    </select><br>
-
-    <label>Bank:</label>
-    <input type="text" name="bank"><br>
-
-    <label>Phone Number:</label>
-    <input type="text" name="phone_number"><br>
-
-    <label>Address:</label>
-    <input type="text" name="address"><br>
-
-    <button type="submit">Sign Up</button>
-</form>
+      </div>
+      <div id="signup-below1"><b>ReelVision:</b></div>
+      <div id="signup-below2">그들의 비전을 필름으로, 영화로 만들다.</div>
+    </div>
+  </body>
+</html>
