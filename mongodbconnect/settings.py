@@ -180,3 +180,4 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+LOGOUT_REDIRECT_URL = 'home'

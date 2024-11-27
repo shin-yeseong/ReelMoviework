@@ -1,114 +1,146 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Page</title>
+    <link rel="stylesheet" href="{% static 'css/mypage.css' %}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+    />
 </head>
 <body>
-    <h1>My Page</h1>
-
-    <!-- 내 정보 -->
-    <div>
-        <h2>Your Profile</h2>
-        <table>
-            <tr>
-                <th>Username</th>
-                <td>{{ user.username }}</td>
-            </tr>
-            <tr>
-                <th>First Name</th>
-                <td>{{ user.first_name }}</td>
-            </tr>
-            <tr>
-                <th>Last Name</th>
-                <td>{{ user.last_name }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Date of Birth</th>
-                <td>{{ user.date_of_birth }}</td>
-            </tr>
-            <tr>
-                <th>Gender</th>
-                <td>{{ user.gender }}</td>
-            </tr>
-            <tr>
-                <th>Role</th>
-                <td>{{ user.role }}</td>
-            </tr>
-            <tr>
-                <th>Bank</th>
-                <td>{{ user.bank }}</td>
-            </tr>
-            <tr>
-                <th>Phone Number</th>
-                <td>{{ user.phone_number }}</td>
-            </tr>
-            <tr>
-                <th>Address</th>
-                <td>{{ user.address }}</td>
-            </tr>
-        </table>
-
-        <!-- 수정 버튼 -->
-        <div>
-            <a href="{% url 'mypage:update_profile' %}"><button>Edit Profile</button></a>
-            <a href="{% url 'mypage:change_password' %}"><button>Change Password</button></a>
+    <section id="main">
+        <div id="header">
+            <a href="{% url 'home' %}">
+                <div class="logo">
+                    <img src="{% static 'images/ReelVision.svg' %}" alt="ReelVision Logo" />
+                </div>
+            </a>
+            <div class="right">
+                <div class="box">
+                    <div class="sign-box">
+                        <a href="{% url 'funding_movie_page' %}">Funding</a>
+                        <p>|</p>
+                        <a href="{% url 'streaming_movie_page' %}">Movie Archive</a>
+                        <p>|</p>
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'logout' %}">Logout</a>
+                        {% else %}
+                            <a href="{% url 'signin' %}">SIGN-IN</a>
+                            <p>|</p>
+                            <a href="{% url 'signup' %}">SIGN-UP</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- 구매한 영화 섹션 -->
-    <div>
-        <h2>Purchased Movies</h2>
-        <ul>
-            {% for movie in movies %}
-            <li>{{ movie.title }} ({{ movie.time }} minutes) - Genre: {{ movie.genre|join:", " }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+        <!-- User Profile Section -->
+        <div id="profile-section">
+            <div class="profile-info">
+                <h1>My Page</h1>
+                <table>
+                    <tr>
+                        <th>Username</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>First Name</th>
+                        <td>{{ user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td>{{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date of Birth</th>
+                        <td>{{ user.date_of_birth }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>{{ user.gender }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>{{ user.role }}</td>
+                    </tr>
+                    <tr>
+                        <th>Bank</th>
+                        <td>{{ user.bank }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number</th>
+                        <td>{{ user.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{ user.address }}</td>
+                    </tr>
+                </table>
+                <div>
+                    <a href="{% url 'mypage:update_profile' %}"><button>Edit Profile</button></a>
+                    <a href="{% url 'mypage:change_password' %}"><button>Change Password</button></a>
+                </div>
+            </div>
+        </div>
 
-    <!-- 후원한 영화 섹션 -->
-    <div>
-        <h2>Funded Movies</h2>
-        {% if funded_movies %}
+        <!-- Purchased Movies Section -->
+        <div class="section">
+            <h2>Purchased Movies</h2>
             <ul>
-                {% for movie in funded_movies %}
-                <li>
-                    <h3>{{ movie.title }}</h3>
-                    <p>Genre: {{ movie.genre|join:", " }}</p>
-                    <p>Duration: {{ movie.time }} minutes</p>
-                    <p>Funding Amount: {{ movie.total_funding_amount }}</p>
-                    <p>Funding Deadline: {{ movie.funding_deadline }}</p>
-                </li>
+                {% for movie in movies %}
+                    <li>{{ movie.title }} ({{ movie.time }} minutes) - Genre: {{ movie.genre|join:", " }}</li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <p>You haven't funded any movies yet.</p>
-        {% endif %}
-    </div>
+        </div>
 
-    <!-- 내가 등록한 프로젝트 섹션 -->
-    <div>
-        <h2>My Projects</h2>
-        {% if my_projects %}
-            <ul>
-                {% for project in my_projects %}
-                <li>
-                    <h3>{{ project.title }}</h3>
-                    <p>Status: {{ project.status }}</p>
-                    <p>Total Funding: {{ project.total_funding_amount }}</p>
-                    <p>Funding Deadline: {{ project.funding_deadline }}</p>
-                    <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
-                </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You haven't registered any projects yet.</p>
-        {% endif %}
-    </div>
+        <!-- Funded Movies Section -->
+        <div class="section">
+            <h2>Funded Movies</h2>
+            {% if funded_movies %}
+                <ul>
+                    {% for movie in funded_movies %}
+                        <li>
+                            <h3>{{ movie.title }}</h3>
+                            <p>Genre: {{ movie.genre|join:", " }}</p>
+                            <p>Duration: {{ movie.time }} minutes</p>
+                            <p>Funding Amount: {{ movie.total_funding_amount }}</p>
+                            <p>Funding Deadline: {{ movie.funding_deadline }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You haven't funded any movies yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- My Projects Section -->
+        <div class="section">
+            <h2>My Projects</h2>
+            {% if my_projects %}
+                <ul>
+                    {% for project in my_projects %}
+                        <li>
+                            <h3>{{ project.title }}</h3>
+                            <p>Status: {{ project.status }}</p>
+                            <p>Total Funding: {{ project.total_funding_amount }}</p>
+                            <p>Funding Deadline: {{ project.funding_deadline }}</p>
+                            <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You haven't registered any projects yet.</p>
+            {% endif %}
+        </div>
+    </section>
 </body>
 </html>
