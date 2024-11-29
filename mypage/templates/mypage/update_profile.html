@@ -1,19 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
+    <title>프로필 수정</title>
 </head>
 <body>
-    <h1>Edit Profile</h1>
+    <!-- 메시지 표시 -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
+    <!-- 프로필 수정 폼 -->
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Changes</button>
+        <button type="submit">프로필 저장</button>
     </form>
-
-    <a href="{% url 'mypage:mypage' %}">Back to My Page</a>
 </body>
 </html>
