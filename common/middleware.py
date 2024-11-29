@@ -21,13 +21,13 @@ from django.contrib.auth.models import AnonymousUser
 class MongoDBUserMiddleware(MiddlewareMixin):
     def process_request(self, request):
         user_id = request.session.get('user_id')
-        print(f"세션에서 가져온 user_id: {user_id}")  # 디버깅용
+        print(f"[Middleware] 세션에서 가져온 user_id: {user_id}")
 
         if user_id:
             try:
                 # MongoDB에서 사용자 데이터 가져오기
                 user = users_collection.find_one({'_id': ObjectId(user_id)})
-                print(f"MongoDB에서 가져온 사용자 데이터: {user}")  # 디버깅용
+                print(f"[Middleware] MongoDB에서 가져온 사용자 데이터: {user}")
 
                 if user:
                     # MongoDBUser 객체 생성
@@ -35,7 +35,7 @@ class MongoDBUserMiddleware(MiddlewareMixin):
                         username=user['username'],
                         email=user.get('email', ''),
                         role=user.get('role', 'viewer'),
-                        id=str(user['_id']),  # _id를 문자열로 변환
+                        id=str(user['_id']),
                         hashed_password=user.get('password'),
                         first_name=user.get('first_name', ''),
                         last_name=user.get('last_name', ''),
@@ -44,18 +44,18 @@ class MongoDBUserMiddleware(MiddlewareMixin):
                         bank=user.get('bank', ''),
                         phone_number=user.get('phone_number', ''),
                         address=user.get('address', ''),
-                        last_login=user.get('last_login'),  # last_login 추가
-                        date_joined=user.get('date_joined')  # date_joined 추가
+                        last_login=user.get('last_login'),
+                        date_joined=user.get('date_joined')
                     )
-                    print(f"request.user 설정됨: {request.user.username}")
+                    print(f"[Middleware] request.user 설정됨: {request.user.username}")
                 else:
-                    print("MongoDB에서 사용자를 찾을 수 없습니다.")
+                    print("[Middleware] MongoDB에서 사용자를 찾을 수 없습니다.")
                     request.user = AnonymousUser()
             except Exception as e:
-                print(f"MongoDBUserMiddleware 오류: {e}")
+                print(f"[Middleware] MongoDBUserMiddleware 오류: {e}")
                 request.user = AnonymousUser()
         else:
-            print("세션에 user_id가 없습니다.")
+            print("[Middleware] 세션에 user_id가 없습니다.")
             request.user = AnonymousUser()
 
 class MongoDBUser:
