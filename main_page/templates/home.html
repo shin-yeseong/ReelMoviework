@@ -24,18 +24,18 @@
         <div class="box">
             <div class="sign-box">
                 <div class="menu-item">
-                    <a href="{% url 'funding_movie_page' %}" class="main-link">Reel</a>
+                    <a href="{% url 'funding_movie_page' %}" class="main-link">REEL</a>
                     <div class="dropdown">
-                        <a href="#link1">Option 1</a>
-                        <a href="#link2">Option 2</a>
+                        <a href="{% url 'funding:upload_funding_movie' %}">Upload Funding movie</a>
+                        <a href="{% url 'funding:movie_list' %}">Movie List</a>
                     </div>
                 </div>
                 <p>|</p>
                 <div class="menu-item">
-                    <a href="{% url 'streaming_movie_page' %}" class="main-link">Vision</a>
+                    <a href="{% url 'streaming_movie_page' %}" class="main-link">VISION</a>
                     <div class="dropdown">
-                        <a href="#link3">Option 1</a>
-                        <a href="#link4">Option 2</a>
+                        <a href="{% url 'streaming:upload_streaming_movie' %}">Upload Streaming movie</a>
+                        <a href="{% url 'streaming:streaming_movie_list' %}">Movie List</a>
                     </div>
                 </div>
                 <p>|</p>
