@@ -70,5 +70,16 @@ class MongoDBUser:
         """
         return check_password(raw_password, self.password)
 
+    def change_password(self, new_password):
+        """
+        Change the user's password.
+        """
+        hashed_password = make_password(new_password)  # 비밀번호 해싱
+        users_collection.update_one(
+            {'_id': ObjectId(self.id)},  # MongoDB에서 사용자 검색
+            {'$set': {'password': hashed_password}}  # 새 비밀번호 저장
+        )
+        self.password = hashed_password  # 객체의 비밀번호도 업데이트
+
 
 
