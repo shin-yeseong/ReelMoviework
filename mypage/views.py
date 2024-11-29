@@ -15,32 +15,27 @@ db = client['mongodatabase']
 collection = db['funding_fundingmovie']
 
 def ensure_django_user(request_user):
-    """
-    MongoDBUser 객체를 Django User 객체로 변환 및 동기화.
-    """
-    if not isinstance(request_user, User):  # MongoDBUser일 경우 변환
-        try:
-            django_user, created = User.objects.get_or_create(
-                username=request_user.username,
-                defaults={
-                    'email': request_user.email,
-                    'first_name': getattr(request_user, 'first_name', ''),
-                    'last_name': getattr(request_user, 'last_name', ''),
-                }
-            )
-
-            # 이미 존재하는 경우 MongoDB 데이터와 동기화
-            if not created:
-                django_user.email = request_user.email
-                django_user.first_name = getattr(request_user, 'first_name', '')
-                django_user.last_name = getattr(request_user, 'last_name', '')
-                django_user.save()
-
-            return django_user
-        except Exception as e:
-            print(f"ensure_django_user 에러: {e}")
-            return None
-    return request_user
+    if isinstance(request_user, User):
+        return request_user
+    # MongoDB에서 사용자 데이터를 가져와 Django User로 변환
+    try:
+        django_user, created = User.objects.get_or_create(
+            username=request_user.username,
+            defaults={
+                'email': request_user.email,
+                'first_name': getattr(request_user, 'first_name', ''),
+                'last_name': getattr(request_user, 'last_name', ''),
+            }
+        )
+        if not created:
+            django_user.email = request_user.email
+            django_user.first_name = getattr(request_user, 'first_name', '')
+            django_user.last_name = getattr(request_user, 'last_name', '')
+            django_user.save()
+        return django_user
+    except Exception as e:
+        print(f"Error in ensure_django_user: {e}")
+        return None
 
 
 
@@ -166,12 +161,27 @@ def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(user=user, data=request.POST)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # 세션 유지
-            messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
-            return redirect('mypage:mypage')
+            try:
+                # 비밀번호 변경 및 저장
+                user = form.save()
+
+                # MongoDB에 비밀번호 동기화
+                hashed_password = user.password  # 해싱된 비밀번호 가져오기
+                users_collection.update_one(
+                    {"username": user.username},
+                    {"$set": {"password": hashed_password}}
+                )
+
+                # 세션 갱신
+                update_session_auth_hash(request, user)
+
+                messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
+                return redirect('mypage:mypage')
+            except Exception as e:
+                print(f"MongoDB 저장 에러: {e}")
+                messages.error(request, '비밀번호 변경 중 문제가 발생했습니다.')
         else:
-            print(form.errors)  # 디버깅: 폼 오류 출력
+            print("폼 오류:", form.errors)
             messages.error(request, '비밀번호 변경에 실패했습니다.')
     else:
         form = PasswordChangeForm(user=user)

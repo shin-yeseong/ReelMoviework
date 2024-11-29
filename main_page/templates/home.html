@@ -10,34 +10,49 @@
 </head>
 <body>
 <section id="main">
-    <div id="header">
-        <a href="{% url 'home' %}">
-            <div class="logo">
-                <img src="{% static 'images/ReelVision.svg' %}" >
-            </div>
-        </a>
+  <div id="header">
+    <a href="{% url 'home' %}">
+        <div class="logo">
+            <img src="{% static 'images/ReelVision.svg' %}" >
+        </div>
+    </a>
 
         <dxiv class="center"></dxiv>
+    <div class="center"></div>
 
-        <div class="right">
-            <div class="box">
-                <div class="sign-box">
-                    <a href="{% url 'funding_movie_page' %}">Reel</a>
-                    <p>|</p>
-                    <a href="{% url 'streaming_movie_page' %}">Vision</a>
-                    <p>|</p>
-                    {% if request.user.is_authenticated %}
-<a href="{% url 'mypage:mypage' %}">MyPage</a>                        <p>|</p>
-                        <a href="{% url 'logout' %}">Logout</a>
-                    {% else %}
-                        <a href="{% url 'signup' %}">SIGN-UP</a>
-                        <p>|</p>
-                        <a href="{% url 'signin' %}">SIGN-IN</a>
-                    {% endif %}
+    <div class="right">
+        <div class="box">
+            <div class="sign-box">
+                <div class="menu-item">
+                    <a href="{% url 'funding_movie_page' %}" class="main-link">Reel</a>
+                    <div class="dropdown">
+                        <a href="#link1">Option 1</a>
+                        <a href="#link2">Option 2</a>
+                    </div>
                 </div>
+                <p>|</p>
+                <div class="menu-item">
+                    <a href="{% url 'streaming_movie_page' %}" class="main-link">Vision</a>
+                    <div class="dropdown">
+                        <a href="#link3">Option 1</a>
+                        <a href="#link4">Option 2</a>
+                    </div>
+                </div>
+                <p>|</p>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'mypage:mypage' %}">MyPage</a>
+                    <p>|</p>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'signup' %}">SIGN-UP</a>
+                    <p>|</p>
+                    <a href="{% url 'signin' %}">SIGN-IN</a>
+                {% endif %}
             </div>
         </div>
     </div>
+</div>
+
 
     <div id="intro">
         <div class="banner-text">
@@ -84,5 +99,22 @@
         <p>© 2024 ReelVision | OSSProj | Team 2</p>
     </div>
 </footer>
+<script>
+    document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+        const dropdown = item.querySelector('.dropdown');
+        if (dropdown) dropdown.style.display = 'block';  // 호버 시 드롭다운 보이기
+    });
+
+    item.addEventListener('mouseleave', () => {
+        const dropdown = item.querySelector('.dropdown');
+        if (dropdown) dropdown.style.display = 'none';  // 마우스를 벗어나면 드롭다운 숨기기
+    });
+});
+
+</script>
+
 </body>
+
+
 </html>
