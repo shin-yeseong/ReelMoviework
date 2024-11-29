@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details</title>
+    <!-- 토스페이먼츠 결제창 SDK 추가 -->
+    <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
         /* 기본 스타일 */
         body {
@@ -48,6 +50,21 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        .funding-button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #f04a00;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .funding-button:hover {
+            background-color: #d03a00;
+        }
     </style>
 </head>
 <body>
@@ -69,17 +86,6 @@
         <div class="detail-row"><span class="label">Funding Deadline:</span> {{ movie.funding_deadline }}</div>
         <div class="detail-row"><span class="label">Created On:</span> {{ movie.create_date }}</div>
 
-             <!-- Creator and Actors -->
-        <div class="detail-row"><span class="label">Creator (Director):</span> {{ movie.creator }}</div>
-        <div class="detail-row"><span class="label">Actors:</span> {{ movie.actors|join:", " }}</div>
-
-        <!-- Creator's Talk -->
-        <div class="detail-row"><span class="label">Creator's Talk:</span> {{ movie.creator_talk }}</div>
-
-        <!-- Total funding amount and number of backers -->
-        <div class="detail-row"><span class="label">Total Funding Amount:</span> ₩{{ movie.total_funding_amount }}</div>
-        <div class="detail-row"><span class="label">Backers:</span> {{ movie.backers|length }}명</div>
-
         <!-- Funding Options -->
         <div class="detail-row"><span class="label">Funding Options:</span></div>
         <div>
@@ -91,22 +97,27 @@
             {% endfor %}
         </div>
     </div>
-    <style>
-        .funding-button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #f04a00;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
 
-        .funding-button:hover {
-            background-color: #d03a00;
+    <script>
+        // ------ 토스페이먼츠 클라이언트 키 설정 ------
+        var clientKey = "test_ck_Ba5PzR0ArnwaZPgnwwx18vmYnNeD";
+        var tossPayments = TossPayments(clientKey);
+
+        // ------ 결제창 호출 함수 ------
+        function startPayment(amount, benefit) {
+            tossPayments
+                .requestPayment("카드", {
+                    amount: amount,  // 결제 금액
+                    orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
+                    orderName: benefit,  // 혜택 이름
+                    customerName: "{{ user.username }}",  // 사용자 이름
+                    successUrl: "https://docs.tosspayments.com/guides/payment/test-success",  // 결제 성공 시 이동 URL
+                    failUrl: "https://docs.tosspayments.com/guides/payment/test-fail"  // 결제 실패 시 이동 URL
+                })
+                .catch(function (error) {
+                    alert('Payment failed: ' + error.message);
+                });
         }
-    </style>
+    </script>
 </body>
 </html>
-
