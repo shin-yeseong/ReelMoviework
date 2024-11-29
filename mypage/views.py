@@ -10,9 +10,28 @@ from funding.models import FundingMovie
 from pymongo import MongoClient
 from mongodbconnect.settings import client
 from django.contrib.auth.models import User
+from common.middleware import MongoDBUser
+
 # MongoDB 클라이언트 및 데이터베이스 설정
-db = client['mongodatabase']
-collection = db['funding_fundingmovie']
+
+
+from pymongo import MongoClient, errors
+
+try:
+    client = MongoClient(
+        'mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority',
+        serverSelectionTimeoutMS=15000,  # 타임아웃 설정
+        socketTimeoutMS=15000
+    )
+    db = client['mongodatabase']
+    users_collection = db['user']
+    collection = db['funding_fundingmovie']
+    # 연결 테스트
+    client.admin.command('ping')
+    print("[DEBUG] MongoDB 연결 성공")
+except errors.ServerSelectionTimeoutError as e:
+    print(f"[DEBUG] MongoDB 서버 연결 실패: {e}")
+    users_collection = None
 
 def ensure_django_user(request_user):
     if isinstance(request_user, User):
@@ -89,16 +108,6 @@ def purchased_movies(request):
     return render(request, 'mypage/purchased_movies.html', {'movies': page_movies})
 
 
-# MongoDB 연결 설정
-client = MongoClient(
-    'your_mongo_connection_string',
-    maxPoolSize=50,  # 최대 연결 풀 크기
-    serverSelectionTimeoutMS=5000  # 연결 타임아웃 (ms)
-)
-db = client['mongodatabase']
-users_collection = db['user']
-
-
 @login_required
 def mypage(request):
     user_id = request.session.get('user_id')
@@ -125,65 +134,103 @@ def mypage(request):
         print(f"Error fetching user data: {e}")
         return render(request, 'mypage/mypage.html', {'error': 'An error occurred while fetching user data'})
 
+
+from bson import ObjectId
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from pymongo import MongoClient
+from django.contrib.auth.hashers import make_password, check_password
+from .forms import ProfileUpdateForm, PasswordChangeForm
+
+from bson import ObjectId
+
 @login_required
 def update_profile(request):
-    """
-    사용자 프로필 수정 기능.
-    """
-    user = ensure_django_user(request.user)
-    if user is None:
+    user = request.user  # Middleware에서 설정한 MongoDBUser 객체
+    if not isinstance(user, MongoDBUser):
+        messages.error(request, '로그인 정보가 잘못되었습니다.')
         return redirect('signin')
 
     if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, '프로필이 성공적으로 업데이트되었습니다.')
-            return redirect('mypage:mypage')
-        else:
-            print(form.errors)  # 디버깅: 폼 오류 출력
-            messages.error(request, '프로필 업데이트에 실패했습니다.')
-    else:
-        form = ProfileUpdateForm(instance=user)
+        bank = request.POST.get('bank', '').strip()
+        address = request.POST.get('address', '').strip()
 
-    return render(request, 'mypage/update_profile.html', {'form': form})
+        try:
+            # MongoDB 업데이트
+            result = users_collection.update_one(
+                {'_id': ObjectId(user.id)},
+                {'$set': {'bank': bank, 'address': address}}
+            )
+            if result.modified_count > 0:
+                messages.success(request, '프로필이 성공적으로 업데이트되었습니다.')
+            else:
+                messages.warning(request, '변경된 내용이 없습니다.')
 
+        except Exception as e:
+            print(f"[DEBUG] MongoDB 업데이트 오류: {e}")
+            messages.error(request, '프로필 업데이트 중 문제가 발생했습니다.')
+
+    return render(request, 'mypage/update_profile.html', {
+        'bank': user.bank,
+        'address': user.address,
+    })
+
+from django.contrib.auth.hashers import make_password
+
+from django.contrib.auth.hashers import make_password
+
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 @login_required
 def change_password(request):
     """
-    사용자 비밀번호 변경 기능.
+    사용자 비밀번호 변경
     """
-    user = ensure_django_user(request.user)
-    if user is None:
+    user = request.user  # Middleware에서 설정된 MongoDBUser 객체 사용
+    if not isinstance(user, MongoDBUser):
+        messages.error(request, '로그인 정보가 잘못되었습니다.')
         return redirect('signin')
 
     if request.method == 'POST':
-        form = PasswordChangeForm(user=user, data=request.POST)
-        if form.is_valid():
-            try:
-                # 비밀번호 변경 및 저장
-                user = form.save()
+        old_password = request.POST.get('old_password', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
 
-                # MongoDB에 비밀번호 동기화
-                hashed_password = user.password  # 해싱된 비밀번호 가져오기
-                users_collection.update_one(
-                    {"username": user.username},
-                    {"$set": {"password": hashed_password}}
-                )
+        # 기존 비밀번호 검증
+        if not user.check_password(old_password):
+            messages.error(request, '기존 비밀번호가 올바르지 않습니다.')
+            return render(request, 'mypage/change_password.html')
 
-                # 세션 갱신
-                update_session_auth_hash(request, user)
+        # 새 비밀번호와 확인 비밀번호 일치 여부 확인
+        if new_password != confirm_password:
+            messages.error(request, '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+            return render(request, 'mypage/change_password.html')
 
+        # 새 비밀번호 검증 (예: 최소 길이, 복잡성 등)
+        if len(new_password) < 8:
+            messages.error(request, '비밀번호는 최소 8자 이상이어야 합니다.')
+            return render(request, 'mypage/change_password.html')
+
+        try:
+            # 비밀번호 해싱 후 업데이트
+            hashed_password = make_password(new_password)
+            result = users_collection.update_one(
+                {'_id': ObjectId(user.id)},
+                {'$set': {'password': hashed_password}}
+            )
+            if result.modified_count > 0:
                 messages.success(request, '비밀번호가 성공적으로 변경되었습니다.')
-                return redirect('mypage:mypage')
-            except Exception as e:
-                print(f"MongoDB 저장 에러: {e}")
-                messages.error(request, '비밀번호 변경 중 문제가 발생했습니다.')
-        else:
-            print("폼 오류:", form.errors)
-            messages.error(request, '비밀번호 변경에 실패했습니다.')
-    else:
-        form = PasswordChangeForm(user=user)
+            else:
+                messages.warning(request, '비밀번호 변경에 실패했습니다.')
 
-    return render(request, 'mypage/change_password.html', {'form': form})
+        except Exception as e:
+            print(f"[DEBUG] 비밀번호 업데이트 오류: {e}")
+            messages.error(request, '비밀번호 변경 중 문제가 발생했습니다.')
+
+        return redirect('mypage:mypage')
+
+    return render(request, 'mypage/change_password.html')
