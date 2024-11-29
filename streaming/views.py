@@ -26,7 +26,6 @@ from bson import ObjectId
 client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
 db = client_mongo['mongodatabase']  # 데이터베이스 선택
 collection = db['streaming_streamingmovie']  # 컬렉션 선택
-streaming_orders_collection = db['streaming_order']
 streaming_movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 streaming_poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 

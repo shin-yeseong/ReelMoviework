@@ -154,7 +154,7 @@
                             <p><strong>Actors:</strong> {{ movie.actors }}</p>
                             <p><strong>Summary:</strong> {{ movie.summary }}</p>
                         </div>
-                        <button class="button" onclick="playMovie(event, '{{ movie.s_id }}')">Play Movie</button>
+                        <button class="button" onclick="playOrPay('{{ movie.s_id }}', '{{ user.id }}')">Play Movie</button>
                     </div>
                 </div>
             </div>
@@ -183,10 +183,22 @@
             }
         }
 
-        // 영화 재생 함수
-        function playMovie(event, movieId) {
-            event.stopPropagation();  // 카드 닫히는 이벤트 중지
-            window.location.href = `/streaming/movie/${movieId}/`;  // streaming_movie_detail 뷰로 이동
+        function playOrPay(movieId, movieTitle) {
+            fetch(`/payments/check_payment_status/${movieId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.can_watch) {
+                        // 결제가 완료된 경우 영화 재생
+                        window.location.href = `/streaming/movie/${movieId}/`;
+                    } else {
+                        // 결제가 필요하면 결제 페이지로 이동
+                        window.location.href = `/payments/widget/checkout`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking payment:', error);
+                    alert('결제 확인 중 문제가 발생했습니다.');
+                });
         }
     </script>
 

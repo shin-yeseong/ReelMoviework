@@ -1,9 +1,21 @@
+import datetime
+import uuid
+
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 import requests, json, base64
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from mongodbconnect import settings
+from pymongo import MongoClient
 
 billing_key_map = {}
+
+# MongoDB 클라이언트 및 데이터베이스 설정
+client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
+db = client_mongo['mongodatabase']  # 데이터베이스 선택
+collection = db['streaming_streamingmovie']  # 컬렉션 선택
+streaming_orders_collection = db['streaming_order']
 
 
 # API 요청에 헤더를 생성하는 함수
@@ -62,15 +74,15 @@ def paymentBilling(request):
 # TODO: 개발자센터에 로그인해서 내 시크릿 키를 입력하세요. 시크릿 키는 외부에 공개되면 안돼요.
 # @docs https://docs.tosspayments.com/reference/using-api/api-keys
 def widgetSuccess(request):
-    return process_payment(request, "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6", './widget/success.html')
+    return process_payment(request, "test_sk_DpexMgkW36RKKkgXJvgw3GbR5ozO", './widget/success.html')
 
 
 def paymentSuccess(request):
-    return process_payment(request, "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R", './payment/success.html')
+    return process_payment(request, "test_sk_DpexMgkW36RKKkgXJvgw3GbR5ozO", './payment/success.html')
 
 
 def brandpaySuccess(request):
-    return process_payment(request, "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R", './brandpay/success.html')
+    return process_payment(request, "test_sk_DpexMgkW36RKKkgXJvgw3GbR5ozO", './brandpay/success.html')
 
 
 # 결제 승인 호출하는 함수
@@ -197,3 +209,67 @@ def callback_auth(request):
         return JsonResponse(resjson, status=status_code)
     else:
         return JsonResponse(resjson, status=status_code)
+
+@csrf_exempt
+def streaming_payment(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
+            movie_id = data.get('movie_id')
+            movie_title = data.get('title')  # 추가: 영화 제목
+            payment_type = "forever"  # 스트리밍은 영구 소장만 가능
+            amount = 2000  # 결제 금액 (고정)
+
+            # 주문 데이터 생성
+            streaming_order = {
+                "order_id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "movie_id": movie_id,
+                "movie_title": movie_title,  # 영화 제목 저장
+                "payment_type": payment_type,
+                "amount": amount,
+                "order_date": datetime.now(),
+                "status": "success"
+            }
+
+            # MongoDB에 저장
+            streaming_orders_collection.insert_one(streaming_order)
+            return JsonResponse({"message": "Streaming payment saved successfully!"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+def get_streaming_payment_info(request, movie_id):
+    try:
+        # 영화 정보를 MongoDB에서 가져오기
+        movie = db['streaming_order'].find_one({"_id": movie_id})  # Replace with your actual movie collection
+        if not movie:
+            return JsonResponse({"error": "Movie not found"}, status=404)
+
+        # 반환할 데이터
+        data = {
+            "movie_id": str(movie["_id"]),
+            "user_id": movie["user_id"],
+            "title": movie["title"],
+            "amount": 1000,  # 고정 금액
+            "customer_email": request.user.email,
+            "customer_name": request.user.get_full_name()
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@login_required(login_url='signin')
+def check_payment_status(request, movie_id):
+    user_id = request.GET.get('user_id')
+
+    if not user_id:
+        return JsonResponse({"error": "not_logged_in"}, status=401)
+
+    payment_record = streaming_orders_collection.find_one({"user_id": user_id, "movie_id": movie_id})
+
+    if payment_record:
+        return JsonResponse({"can_watch": True})
+    else:
+        return JsonResponse({"can_watch": False})

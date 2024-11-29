@@ -18,4 +18,8 @@ urlpatterns = [
     path('confirm-billing', views.confirm_billing),
 
     path('fail', views.fail),
+
+    path('streaming_payment', views.streaming_payment),
+    path('check_payment_status/<str:movie_id>/', views.check_payment_status, name='check_payment_status'),
+    path('start/<str:movie_id>/', views.process_payment, name='process_payment'),
 ]
