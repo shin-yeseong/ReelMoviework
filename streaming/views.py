@@ -1,10 +1,14 @@
 # streaming/views.py
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+
+from django.views.decorators.csrf import csrf_exempt
 
 from common.views import sessions_collection, users_collection
 from mongodbconnect.settings import client
@@ -22,6 +26,7 @@ from bson import ObjectId
 client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
 db = client_mongo['mongodatabase']  # 데이터베이스 선택
 collection = db['streaming_streamingmovie']  # 컬렉션 선택
+streaming_orders_collection = db['streaming_order']
 streaming_movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
 streaming_poster_fs = gridfs.GridFS(db)  # 포스터 이미지용 GridFS
 
@@ -194,5 +199,3 @@ def movie_detail(request, movie_id):
         }
         return JsonResponse(movie_data)
     return JsonResponse({"error": "Movie not found"}, status=404)
-
-##
