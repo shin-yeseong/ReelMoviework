@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details</title>
     <!-- 토스페이먼츠 결제창 SDK 추가 -->
-    <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
         /* 기본 스타일 */
         body {
@@ -91,33 +90,11 @@
         <div>
             {% for option in movie.funding_options %}
                 <button class="funding-button"
-                        onclick="startPayment({{ option.amount }}, '{{ option.benefit }}')">
+                        onclick="">
                     ₩{{ option.amount }} - {{ option.benefit }}
                 </button>
             {% endfor %}
         </div>
     </div>
-
-    <script>
-        // ------ 토스페이먼츠 클라이언트 키 설정 ------
-        var clientKey = "test_ck_Ba5PzR0ArnwaZPgnwwx18vmYnNeD";
-        var tossPayments = TossPayments(clientKey);
-
-        // ------ 결제창 호출 함수 ------
-        function startPayment(amount, benefit) {
-            tossPayments
-                .requestPayment("카드", {
-                    amount: amount,  // 결제 금액
-                    orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
-                    orderName: benefit,  // 혜택 이름
-                    customerName: "{{ user.username }}",  // 사용자 이름
-                    successUrl: "https://docs.tosspayments.com/guides/payment/test-success",  // 결제 성공 시 이동 URL
-                    failUrl: "https://docs.tosspayments.com/guides/payment/test-fail"  // 결제 실패 시 이동 URL
-                })
-                .catch(function (error) {
-                    alert('Payment failed: ' + error.message);
-                });
-        }
-    </script>
 </body>
 </html>

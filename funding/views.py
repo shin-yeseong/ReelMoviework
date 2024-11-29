@@ -14,6 +14,8 @@ from pymongo import MongoClient
 import gridfs
 from django.http import HttpResponse
 import json
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
@@ -23,6 +25,7 @@ collection = db['funding_fundingmovie']  # 컬렉션 선택
 funding_upload_user_collection = db["funding_upload_user"]
 sessions_collection = db["sessions"]
 users_collection = db["user"]
+funding_order_collection = db['funding_order']
 
 # MongoDB 클라이언트 및 GridFS 설정
 movie_fs = gridfs.GridFS(db)  # 동영상 파일용 GridFS
@@ -227,5 +230,4 @@ def get_poster_image(request, poster_id):
         return HttpResponse(image_data, content_type=content_type)
     except gridfs.errors.NoFile:
         return HttpResponse(status=404)  # 파일이 없으면 404 반환
-
 
