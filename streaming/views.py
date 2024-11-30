@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from common.views import sessions_collection, users_collection
 from mongodbconnect.settings import client
+from payments.views import streaming_orders_collection
 from .models import StreamingMovie
 from .forms import StreamingMovieForm
 import uuid
@@ -19,6 +20,7 @@ from datetime import datetime
 from mongodbconnect import settings
 from pymongo import MongoClient
 import gridfs
+import logging
 from bson import ObjectId
 
 # MongoDB 클라이언트 및 GridFS 설정
@@ -199,3 +201,71 @@ def movie_detail(request, movie_id):
         }
         return JsonResponse(movie_data)
     return JsonResponse({"error": "Movie not found"}, status=404)
+
+
+def payment_success(request):
+    movie_id = request.GET.get("movie_id")  # Extract movie_id from query parameters
+    title = request.GET.get("title")  # Extract title from query parameters
+    user_id = request.user.id  # Logged-in user's ID
+
+    if not movie_id or not title:
+        return JsonResponse({"error": "Missing movie_id or title"}, status=400)
+
+    print(f"movie_id: {movie_id}, title: {title}")
+
+    # Save the payment details to MongoDB
+    streaming_order = {
+        "order_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "movie_id": movie_id,
+        "movie_title": title,
+        "payment_type": "forever",
+        "amount": 1000,
+        "order_date": datetime.now(),
+        "status": "success",
+    }
+    streaming_orders_collection.insert_one(streaming_order)
+
+    # Redirect to the movie detail page
+    return redirect(f"/streaming/movie/{movie_id}/")
+
+
+@csrf_exempt
+def payment_fail(request):
+    title = request.GET.get("movie_title")
+    return render(request, "streaming_payment_fail.html", {
+        "error_message": "결제가 실패했습니다. 다시 시도해 주세요.",
+        "movie_title": title
+    })
+
+
+logger = logging.getLogger(__name__)
+
+@login_required(login_url="signin")  # 로그인하지 않은 사용자는 signin 페이지로 리디렉션
+def check_payment_status(request, movie_id):
+    """
+    결제 상태를 확인하는 뷰 함수
+    :param request: Django WSGIRequest 객체
+    :param movie_id: 영화의 ID
+    :return: JsonResponse
+    """
+    logger.info(f"check_payment_status 호출 - movie_id: {movie_id}, user_id: {request.user.id}")
+
+    # 1. movie_id가 전달되지 않았을 경우 처리
+    if not movie_id:
+        logger.error("movie_id가 전달되지 않았습니다.")
+        return JsonResponse({"error": "Invalid or missing movie_id"}, status=400)
+
+    # 2. 현재 사용자의 ID 가져오기
+    user_id = str(request.user.id)  # MongoDB에서는 문자열 ID를 사용
+
+    # 3. MongoDB에서 결제 정보를 검색
+    payment_record = streaming_orders_collection.find_one({"user_id": user_id, "movie_id": movie_id})
+
+    # 4. 결제 정보가 있을 경우
+    if payment_record:
+        logger.info(f"결제 완료 - user_id: {user_id}, movie_id: {movie_id}")
+        return JsonResponse({"can_watch": True})  # 결제 완료 상태 반환
+    else:
+        logger.info(f"결제 필요 - user_id: {user_id}, movie_id: {movie_id}")
+        return JsonResponse({"can_watch": False})  # 결제 필요 상태 반환

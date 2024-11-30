@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ movie_title }} 결제 진행</title>
+    <!-- SDK 추가 -->
+    <script src="https://js.tosspayments.com/v2/payment"></script>
+  </head>
+
+  <body>
+    <!-- 주문서 영역 -->
+    <div class="wrapper">
+      <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
+        <h1>{{ movie_title }} 결제 진행</h1>
+        <!-- 결제하기 버튼 -->
+        <button class="button" style="margin-top: 30px" onclick="startStreamingPayment()">결제하기</button>
+      </div>
+    </div>
+
+    <script>
+      // ------ 토스페이먼츠 클라이언트 키 설정 ------
+      const clientKey = "test_ck_yZqmkKeP8g2yyW9Ez2DOrbQRxB9l"; // 실제 클라이언트 키로 변경
+      const tossPayments = TossPayments(clientKey);
+
+      // ------ 결제창 호출 함수 ------
+      function startStreamingPayment() {
+        const movieTitle = "{{ movie_title }}"; // 영화 제목
+        const movieId = "{{ movie.id }}"; // 영화 ID
+        const amount = 1000; // 고정된 결제 금액
+
+        tossPayments
+          .requestPayment("카드", {
+            amount: amount, // 결제 금액
+            orderId: `order_${new Date().getTime()}`, // 고유 주문 번호 생성
+            orderName: movieTitle, // 영화 제목
+            customerName: "{{ user.username }}", // 사용자 이름
+            successUrl: `${window.location.origin}/payments/payment/success?movie_id=${movieId}&title=${movieTitle}`, // 결제 성공 시 이동 URL
+            failUrl: `${window.location.origin}/payments/payment/fail?movie_id=${movieId}`, // 결제 실패 시 이동 URL
+          })
+          .catch(function (error) {
+            alert("결제가 실패했습니다: " + error.message);
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -16,6 +16,8 @@ from django.http import HttpResponse
 import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+import logging
+from django.views.decorators.csrf import csrf_exempt
 
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
@@ -231,3 +233,102 @@ def get_poster_image(request, poster_id):
     except gridfs.errors.NoFile:
         return HttpResponse(status=404)  # 파일이 없으면 404 반환
 
+def funding_payment_success(request):
+    print("payment_success")
+
+    movie_id = request.GET.get("movie_id")  # Extract movie_id from query parameters
+    title = request.GET.get("title")  # Extract title from query parameters
+    amount = request.GET.get("amount")  # Extract title from query parameters
+    benefit = request.GET.get("benefit")  # Extract title from query parameters
+    order_id = request.GET.get("orderId")
+    user_id = request.user.id  # Logged-in user's ID
+    user_name = request.user.username  # Logged-in user's username
+
+    if not movie_id or not title:
+        return JsonResponse({"error": "Missing movie_id or title"}, status=400)
+
+    print(f"movie_id: {movie_id}, title: {title}")
+
+    # Save the payment details to MongoDB
+    funding_order = {
+        "order_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "movie_id": movie_id,
+        "movie_title": title,
+        "payment_type": "forever",
+        "amount": amount,
+        "order_name": benefit,
+        "order_date": datetime.now(),
+        "status": "success",
+    }
+    funding_order_collection.insert_one(funding_order)
+
+    # Update backers, backers_funding, and total_funding_amount
+    try:
+        collection.update_one(
+            {"f_id": movie_id},
+            {
+                "$push": {
+                    "backers": user_name,  # Add the user's name to backers
+                    "backers_funding": {"user_id": user_id, "amount": int(amount)},  # Store funding details
+                },
+                "$inc": {"total_funding_amount": int(amount)},  # Increment the total funding amount
+            },
+        )
+        print("Funding details updated successfully.")
+    except Exception as e:
+        print("Error updating funding details:", e)
+        return JsonResponse({"error": "Failed to update funding details"}, status=500)
+
+    # 결제 완료 처리
+    return render(request, 'funding_payment_success.html', {
+        'movie_id': movie_id,
+        'title': title,
+        'amount': amount,
+        'benefit': benefit,
+        'order_id': order_id,
+    })
+
+@csrf_exempt
+def funding_payment_fail(request):
+    title = request.GET.get("movie_title")
+    amount = request.GET.get("amount")
+    benefit = request.GET.get("benefit")
+    return render(request, "funding_payment_fail.html", {
+        "error_message": "결제가 실패했습니다. 다시 시도해 주세요.",
+        "movie_title": title,
+        "order_name": benefit,
+        "amount": amount
+    })
+
+logger = logging.getLogger(__name__)
+
+@login_required(login_url="signin")  # 로그인하지 않은 사용자는 signin 페이지로 리디렉션
+def check_payment_status(request, movie_id, order_name):
+    """
+    결제 상태를 확인하는 뷰 함수
+    :param order_name:
+    :param request: Django WSGIRequest 객체
+    :param movie_id: 영화의 ID
+    :return: JsonResponse
+    """
+    logger.info(f"check_payment_status 호출 - movie_id: {movie_id}, user_id: {request.user.id}")
+
+    # 1. movie_id가 전달되지 않았을 경우 처리
+    if not movie_id:
+        logger.error("movie_id가 전달되지 않았습니다.")
+        return JsonResponse({"error": "Invalid or missing movie_id"}, status=400)
+
+    # 2. 현재 사용자의 ID 가져오기
+    user_id = str(request.user.id)  # MongoDB에서는 문자열 ID를 사용
+
+    # 3. MongoDB에서 결제 정보를 검색
+    payment_record = funding_order_collection.find_one({"user_id": user_id, "movie_id": movie_id, "order_name": order_name})
+
+    # 4. 결제 정보가 있을 경우
+    if payment_record:
+        logger.info(f"결제 완료 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
+        return JsonResponse({"already_paid": True})  # 결제 완료 상태 반환
+    else:
+        logger.info(f"결제 필요 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
+        return JsonResponse({"already_paid": False})  # 결제 필요 상태 반환

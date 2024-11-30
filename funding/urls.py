@@ -10,4 +10,7 @@ urlpatterns = [
     path('movie/list/', views.movie_list, name='movie_list'),
     path('poster/<str:poster_id>/', views.get_poster_image, name="get_poster_image"),
     path('funding-page/', views.funding_page, name='funding_movie_page'),
+    path('payment/success/', views.funding_payment_success, name='funding_success'),
+    path('payment/fail/', views.funding_payment_fail, name='funding_fail'),
+    path('check_payment_status/<str:movie_id>/<str:order_name>/', views.check_payment_status, name='check_payment_status'),
 ]
