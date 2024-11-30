@@ -100,7 +100,7 @@
 
     <script>
         // ------ 토스페이먼츠 클라이언트 키 설정 ------
-        var clientKey = "test_ck_Ba5PzR0ArnwaZPgnwwx18vmYnNeD";
+        var clientKey = "test_ck_yZqmkKeP8g2yyW9Ez2DOrbQRxB9l";
         var tossPayments = TossPayments(clientKey);
 
         // ------ 결제창 호출 함수 ------
@@ -111,8 +111,8 @@
                     orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
                     orderName: benefit,  // 혜택 이름
                     customerName: "{{ user.username }}",  // 사용자 이름
-                    successUrl: "https://docs.tosspayments.com/guides/payment/test-success",  // 결제 성공 시 이동 URL
-                    failUrl: "https://docs.tosspayments.com/guides/payment/test-fail"  // 결제 실패 시 이동 URL
+                    successUrl: window.location.origin + "/payments/payment/success",  // 결제 성공 시 이동 URL
+                    failUrl: window.location.origin + "/payments/payment/fail"  // 결제 실패 시 이동 URL
                 })
                 .catch(function (error) {
                     alert('Payment failed: ' + error.message);
