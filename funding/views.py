@@ -327,8 +327,8 @@ def check_payment_status(request, movie_id, order_name):
 
     # 4. 결제 정보가 있을 경우
     if payment_record:
-        logger.info(f"결제 완료 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
+        logger.info(f"결제 기록 있음 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
         return JsonResponse({"already_paid": True})  # 결제 완료 상태 반환
     else:
-        logger.info(f"결제 필요 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
+        logger.info(f"결제 기록 없음 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
         return JsonResponse({"already_paid": False})  # 결제 필요 상태 반환

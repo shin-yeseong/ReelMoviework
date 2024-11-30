@@ -169,11 +169,13 @@
                     .then(data => {
                         if (data.already_paid) {
                             // If payment is valid, redirect to the movie
-                            alert("이미 결제가 완료되었습니다");
-                        } else {
-                            // Otherwise, open the payment window
-                            startFundingPayment(movieId, movieTitle, amount, benefit);
+                            // alert("이미 결제가 완료되었습니다")
+                            alert("이미 후원한 기록이 있습니다. 추가 후원이 가능합니다.");
                         }
+
+                        // Open the payment window regardless of funding record
+                        startFundingPayment(movieId, movieTitle, amount, benefit);
+
                     })
                     .catch(error => {
                         console.error('Error checking payment:', error);
