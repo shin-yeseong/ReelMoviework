@@ -1,12 +1,15 @@
-  * {
-    margin: 0px;
-    padding: 0px;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  body {
-    font: 0.75em Montserrat, Noto Sans KR, sans-serif;
-    background: #000000;
-  }
+body {
+  font-family: Montserrat, Noto Sans KR, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  line-height: 1.6;
+}
 
   #intro,
   #box,
@@ -23,160 +26,86 @@
     left: 0;
     width: 100%;
     height: 90px;
-    background: #000000;
+    background-color: #000000;
     border-bottom: 2px solid #f04a00;
     z-index: 1000;
+    padding: 0 20px;
 }
 
-
-  .logo {
-    margin-top: 3%;
-      margin-bottom: 3%;
-
-    display: flex;
-    float: left;
-  }
 #header .logo img {
+      margin-top: 5%;
+
     height: 80px;
-    margin-left: 10%;
 }
-  #header .center {
+
+#header .center {
     flex-grow: 1;
-      background-color: #000000;
 }
 
 #header .right {
     display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
-
+    align-items: center;
 }
+
 #header .right .box {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    background: #000000;
-    margin-right: 5%;
 }
 
 #header .right .box .sign-box {
     display: flex;
-    align-items: center; /* 세로 정렬 */
-    justify-content: flex-end;
-    gap: 2%; /* 메뉴 항목 간 간격 좁힘 */
-    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-    margin-right: 10%;
-
+    align-items: center;
+    gap: 10px;
 }
 
-  #header .right .box .sign-box p {
-    margin: 0 2px; /* | 기호 좌우 간격 */
-    font-size: 13px;
+#header .right .box .sign-box p {
     color: #f04a00;
-    text-align: center; /* 수직 가운데 정렬 */
 }
 
-  #header .right .box .sign-box a {
+#header .right .box .sign-box a {
     text-decoration: none;
     font-size: 14px;
     color: #f04a00;
-      margin-right: 2%;
-      margin-left: 2%;
-  }
-
-  #header .right .box .sign-box a:hover {
-    color: #f04a00;
-    text-decoration: underline;
-    transition: 0.1s ease-out;
-  }
-
-  #header .right .box:hover .sign-box {
-    opacity: 1;
-    visibility: visible;
-  }
-.menu-list {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.menu-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-right: 0px; /* 일정한 간격 */
 }
 
-
-.menu-item .main-link {
-    color: #f04a00;
-    font-size: 13px;
-
-    transition: color 0.3s ease;
-}
-
-.menu-item .main-link:hover {
+#header .right .box .sign-box a:hover {
     color: #ff7518;
+    text-decoration: underline;
+}
+
+/* 드롭다운 메뉴 */
+.menu-item {
+    position: relative;
 }
 
 .menu-item .dropdown {
-    display: none; /* 기본적으로 숨김 */
-    position: absolute; /* 부모 메뉴 기준 위치 */
-    top: 100%; /* 부모 메뉴 바로 아래 */
-    left: 50%; /* 부모 메뉴의 가운데 정렬 */
-    transform: translateX(-50%); /* 가운데 정렬 */
-    background: none; /* 배경 제거 */
-    border: none; /* 테두리 제거 */
-    padding: 0; /* 내부 여백 제거 */
-    white-space: nowrap; /* 한 줄로 표시 */
-    z-index: 9999; /* 다른 요소 위에 표시 */
-    margin-top: 2%;
-    border: solid;
-
-}
-
-.menu-item .dropdown {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #222222;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
 }
 
 .menu-item:hover .dropdown {
-    display: block; /* 드롭다운 보이기 */
+    display: block;
 }
-
-.menu-item:hover .dropdown {
-    opacity: 1;
-    visibility: visible;
-}
-
-.menu-item:hover .dropdown {
-    display: flex; /* 드롭다운 보이기 */
-    justify-content: center; /* 가로 가운데 정렬 */
-    align-items: center; /* 세로 가운데 정렬 */
-}
-
-
 
 .menu-item .dropdown a {
-    display: inline-block; /* 가로 배치 */
-    margin: 0 10px; /* 항목 간 간격 */
-    color: #f04a00; /* 글씨 색상 */
-    text-decoration: none; /* 밑줄 제거 */
-    font-size: 13px; /* 글씨 크기 */
+    color: #f04a00;
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    margin: 5px 0;
 }
 
 .menu-item .dropdown a:hover {
-    color: #ff7518; /* 호버 시 색상 변경 */
-    text-decoration: underline; /* 밑줄 추가 */
+    color: #ff7518;
+    text-decoration: underline;
 }
-
-#header .right .box .sign-box nav {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-
 
 
 
@@ -189,6 +118,11 @@
     color: #ff7518;
     text-align: center;
     overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    font: 0.75em Montserrat, Noto Sans KR, sans-serif;
+    background: #000000;
+      margin-top: 12vh;
   }
 
   #intro::before {
