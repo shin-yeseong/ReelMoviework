@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Details</title>
+    <!-- 토스페이먼츠 결제창 SDK 추가 -->
+    <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
         /* 기본 스타일 */
         body {
@@ -48,6 +50,21 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        .funding-button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #f04a00;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .funding-button:hover {
+            background-color: #d03a00;
+        }
     </style>
 </head>
 <body>
@@ -64,49 +81,112 @@
         <div class="detail-row"><span class="label">Summary:</span> {{ movie.summary }}</div>
         <div class="detail-row"><span class="label">Making Description:</span> {{ movie.making_description }}</div>
         <div class="detail-row"><span class="label">Creator:</span> {{ movie.creator }}</div>
-        <div class="detail-row"><span class="label">Target Funding:</span> ₩{{ movie.target_funding }}</div>
+        <div class="detail-row"><span class="label">후원 Target Funding:</span> ₩{{ movie.target_funding }}</div>
+        <div class="detail-row"><span class="label">후원된 Funding 금액:</span> ₩{{ movie.total_funding_amount }}</div>
         <div class="detail-row"><span class="label">Funding Description:</span> {{ movie.funding_description }}</div>
         <div class="detail-row"><span class="label">Funding Deadline:</span> {{ movie.funding_deadline }}</div>
         <div class="detail-row"><span class="label">Created On:</span> {{ movie.create_date }}</div>
-
-             <!-- Creator and Actors -->
-        <div class="detail-row"><span class="label">Creator (Director):</span> {{ movie.creator }}</div>
-        <div class="detail-row"><span class="label">Actors:</span> {{ movie.actors|join:", " }}</div>
-
-        <!-- Creator's Talk -->
-        <div class="detail-row"><span class="label">Creator's Talk:</span> {{ movie.creator_talk }}</div>
-
-        <!-- Total funding amount and number of backers -->
-        <div class="detail-row"><span class="label">Total Funding Amount:</span> ₩{{ movie.total_funding_amount }}</div>
-        <div class="detail-row"><span class="label">Backers:</span> {{ movie.backers|length }}명</div>
 
         <!-- Funding Options -->
         <div class="detail-row"><span class="label">Funding Options:</span></div>
         <div>
             {% for option in movie.funding_options %}
                 <button class="funding-button"
-                        onclick="startPayment({{ option.amount }}, '{{ option.benefit }}')">
+                        onclick="startPayment('{{ option.amount }}', '{{ option.benefit }}', '{{ movie.f_id }}', '{{ movie.title }}')">
                     ₩{{ option.amount }} - {{ option.benefit }}
                 </button>
             {% endfor %}
         </div>
     </div>
-    <style>
-        .funding-button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #f04a00;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+
+    <script>
+
+        const clientKey = "test_ck_yZqmkKeP8g2yyW9Ez2DOrbQRxB9l";
+        const tossPayments = TossPayments(clientKey);
+
+        function startFundingPayment(movieId, movieTitle, amount, benefit) {
+
+            tossPayments
+                .requestPayment("카드", {
+                    amount: amount,  // 결제 금액
+                    orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
+                    orderName: benefit,  // 영화 제목
+                    customerName: "{{ user.username }}",  // 사용자 이름
+                    successUrl: `${window.location.origin}/funding/payment/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${encodeURIComponent(benefit)}`,
+                     failUrl: `${window.location.origin}/funding/payment/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${encodeURIComponent(benefit)}`
+                })
+                .then(() => {
+                    // 결제 성공 후 서버로 POST 요청
+                    fetch('/funding/payment/success/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'  // Django CSRF 토큰
+                        },
+                        body: JSON.stringify({
+                            movie_id: movieId,
+                            title: movieTitle,
+                            amount: amount,
+                            order_name: benefit,
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === "success") {
+                            alert("결제가 완료되었습니다!");
+                            window.location.href = `/funding/${movieId}/`;  // 영화로 이동
+                        } else {
+                            console.error("Payment saving failed:", data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error saving payment:", error);
+                        alert("결제 데이터를 저장하는 중 문제가 발생했습니다.");
+                    });
+                })
+                .catch(function (error) {
+                    alert('결제가 실패했습니다: ' + error.message);
+                });
+            }
+
+        function startPayment(amount, benefit, movieId, movieTitle) {
+            if (!movieId) {
+                console.error('movieId is missing');
+                alert('영화 ID가 올바르지 않습니다.');
+                return;
+            }
+
+            const isAuthenticated = '{{ request.user.is_authenticated }}' === 'True';
+
+            if (isAuthenticated) {
+                fetch(`/funding/check_payment_status/${movieId}/${encodeURIComponent(benefit)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to check payment status');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.already_paid) {
+                            // If payment is valid, redirect to the movie
+                            // alert("이미 결제가 완료되었습니다")
+                            alert("이미 후원한 기록이 있습니다. 추가 후원이 가능합니다.");
+                        }
+
+                        // Open the payment window regardless of funding record
+                        startFundingPayment(movieId, movieTitle, amount, benefit);
+
+                    })
+                    .catch(error => {
+                        console.error('Error checking payment:', error);
+                        alert('결제 확인 중 문제가 발생했습니다.');
+                    });
+            } else {
+                alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                window.location.href = '/login-page/';
+            }
         }
 
-        .funding-button:hover {
-            background-color: #d03a00;
-        }
-    </style>
+    </script>
 </body>
 </html>
-

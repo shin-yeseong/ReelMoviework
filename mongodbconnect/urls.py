@@ -40,4 +40,5 @@ urlpatterns = [
     path('login-page/', signin, name='login_page'),  # 로그인
     path('dash-page/', dashboard, name='dashboard'),
     path('mypage/', include('mypage.urls', namespace='mypage')),  # mypage 앱 연결
+    path('payments/', include('payments.urls')),
 ]
