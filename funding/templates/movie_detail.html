@@ -74,6 +74,14 @@
         <!-- 포스터 이미지 -->
         <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="poster-image">
 
+        <!-- 스틸컷 이미지 -->
+        <div class="detail-row"><span class="label">Still Cuts:</span></div>
+        <div class="still-cuts-container">
+            {% for still_cut_id in movie.still_cut_ids %}
+                <img src="{% url 'funding:get_poster_image' poster_id=still_cut_id %}" alt="Still Cut" class="poster-image">
+            {% endfor %}
+        </div>
+
         <!-- 영화 상세 정보 -->
         <div class="detail-row"><span class="label">Genre:</span> {{ movie.genre|join:", " }}</div>
         <div class="detail-row"><span class="label">Time:</span> {{ movie.time }} minutes</div>
