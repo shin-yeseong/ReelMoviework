@@ -1,12 +1,15 @@
-  * {
-    margin: 0px;
-    padding: 0px;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  body {
-    font: 0.75em Montserrat, Noto Sans KR, sans-serif;
-    background: #000000;
-  }
+body {
+  font-family: Montserrat, Noto Sans KR, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  line-height: 1.6;
+}
 
   #intro,
   #box,
@@ -15,156 +18,94 @@
   }
 
 #header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px;
-    display: flex;
-    justify-content: space-between;
-    background: #000000;
+    height: 90px;
+    background-color: #000000;
     border-bottom: 2px solid #f04a00;
     z-index: 1000;
+    padding: 0 20px;
 }
 
+#header .logo img {
+      margin-top: 5%;
 
-  .logo {
-    margin-top: 3%;
+    height: 80px;
+}
+
+#header .center {
+    flex-grow: 1;
+}
+
+#header .right {
     display: flex;
-    float: left;
-  }
-  .logo > img {
-    margin: auto;
-    width: auto;
-    height: 70px;
-    margin-left: 10%;
-  }
-
-  #header .center {
-    width: 700px;
-    background: #000000;
-  }
-
-  #header .right {
-    width: 300px;
-
-    display: flex;
-    justify-content: flex-end;
-    background: #000000;
-    margin-right: 1%;
-  }
+    align-items: center;
+}
 
 #header .right .box {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    background: #000000;
-    margin-right: 1%;
 }
 
-  #header .right .box .sign-box {
+#header .right .box .sign-box {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
+    gap: 10px;
+}
 
-    background: #000000;
-    width: 100%;
-    height: 100%;
-    line-height: 40px;
-  }
-
-  #header .right .box .sign-box p {
-    margin-left: 10px;
-    font-size: 13px;
+#header .right .box .sign-box p {
     color: #f04a00;
-  }
+}
 
-  #header .right .box .sign-box a {
+#header .right .box .sign-box a {
     text-decoration: none;
-    margin-left: 10px;
-    font-size: 13px;
+    font-size: 14px;
     color: #f04a00;
-  }
-
-  #header .right .box .sign-box a:hover {
-    color: #f04a00;
-
-    text-decoration: underline;
-    transition: 0.1s ease-out;
-  }
-
-  #header .right .box:hover .sign-box {
-    opacity: 1;
-    visibility: visible;
-  }
-.menu-list {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.menu-item {
-    display: flex;
-    align-items: center;
-    position: relative;  /* 드롭다운의 위치 기준 */
-    margin-right: 20px;
 }
 
-
-.menu-item .main-link {
-    text-decoration: none;
-    color: #f04a00;
-    font-size: 13px;
-    padding: 10px 15px;
-    transition: color 0.3s ease;
-}
-
-.menu-item .main-link:hover {
+#header .right .box .sign-box a:hover {
     color: #ff7518;
+    text-decoration: underline;
 }
 
-/* 드롭다운 메뉴 기본 상태 */
+/* 드롭다운 메뉴 */
+.menu-item {
+    position: relative;
+}
+
 .menu-item .dropdown {
-    display: none; /* 기본적으로 숨김 */
-    position: absolute; /* 메뉴 항목 바로 아래로 위치시킴 */
-    top: 100%; /* 부모 메뉴 아래로 위치 */
+    display: none;
+    position: absolute;
+    top: 100%;
     left: 0;
-    background-color: #000;
-    border: 1px solid #f04a00;
+    background-color: #222222;
+    padding: 10px;
     border-radius: 5px;
-    width: 150px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 9999; /* 다른 요소들 위로 표시 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
 }
 
-/* 드롭다운 메뉴가 보일 때 */
 .menu-item:hover .dropdown {
-    display: block; /* 드롭다운 보이기 */
-    opacity: 1; /* 불투명하게 */
-    visibility: visible; /* 보이기 */
-    transition: opacity 0.3s ease, visibility 0s; /* 부드러운 전환 */
+    display: block;
 }
 
 .menu-item .dropdown a {
-    display: block;
-    padding: 10px 15px;
     color: #f04a00;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 13px;
+    display: block;
+    margin: 5px 0;
 }
 
 .menu-item .dropdown a:hover {
-    background-color: #f04a00;
-    color: #fff;
+    color: #ff7518;
+    text-decoration: underline;
 }
-
-#header .right .box .sign-box nav {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-
 
 
 
@@ -177,6 +118,11 @@
     color: #ff7518;
     text-align: center;
     overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    font: 0.75em Montserrat, Noto Sans KR, sans-serif;
+    background: #000000;
+      margin-top: 12vh;
   }
 
   #intro::before {

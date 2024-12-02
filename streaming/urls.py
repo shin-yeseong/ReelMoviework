@@ -12,4 +12,7 @@ urlpatterns = [
     path('api/movies/', views.movie_list, name='movie_list'),
     path('api/movies/<str:movie_id>/', views.movie_detail, name='movie_detail'),
     path('poster/<str:poster_id>/', views.get_streaming_movie_poster_image, name='streaming_movie_poster'),
+    path('success/', views.payment_success, name='success'),
+    path('fail/', views.payment_fail, name='fail'),
+    path('check_payment_status/<str:movie_id>/', views.check_payment_status, name='check_payment_status'),
 ]
