@@ -164,6 +164,22 @@ def upload_funding_movie(request):
                     print("GridFS 이미지 파일 저장 중 오류 발생:", e)
                     return render(request, 'upload_funding.html',
                                   {'form': form, 'error': '이미지 파일 저장 중 오류가 발생했습니다.'})
+
+            # GridFS에 스틸컷 이미지 파일 저장
+            still_cuts = request.FILES.getlist('still_cuts')
+            still_cut_ids = []
+            for still_cut in still_cuts:
+                try:
+                    still_cut_id = poster_fs.put(still_cut, filename=still_cut.name)
+                    still_cut_ids.append(still_cut_id)
+                    print(f"스틸컷 이미지 파일 {still_cut.name}이(가) GridFS에 저장되었습니다.")
+                except Exception as e:
+                    print(f"GridFS 스틸컷 파일 저장 중 오류 발생: {e}")
+                    return render(request, 'upload_funding.html',
+                                  {'form': form, 'error': '스틸컷 이미지 저장 중 오류가 발생했습니다.'})
+
+            funding_data['still_cut_ids'] = still_cut_ids
+
             # MongoDB에 데이터 저장
             try:
                 funding_id = collection.insert_one(funding_data).inserted_id
