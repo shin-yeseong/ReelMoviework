@@ -19,8 +19,12 @@
         </a>
       </div>
       <div class="signup-wrapper">
+{% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
         <form id="signup-form" method="post">
           {% csrf_token %}
+
 
           <label>아이디</label>
           <input

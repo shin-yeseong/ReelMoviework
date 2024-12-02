@@ -103,8 +103,8 @@ def signup(request):
             except ValueError:
                 return render(request, 'signup.html', {'error': 'Invalid date format. Please use YYYY-MM-DD.'})
 
-        if not email.endswith('@dgu.ac.kr'):
-            return render(request, 'signup.html', {'error': 'Only @dgu.ac.kr emails are allowed.'})
+        if not (email.endswith('@dgu.ac.kr') or email.endswith('@dongguk.edu')):
+            return render(request, 'signup.html', {'error': 'Only @dgu.ac.kr or @dongguk.edu emails are allowed.'})
 
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
