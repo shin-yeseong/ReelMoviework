@@ -1,0 +1,358 @@
+* {
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Montserrat, Noto Sans KR, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    background-color: #000000;
+    border-bottom: 2px solid #f04a00;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+#header .logo img {
+      margin-top: 5%;
+
+    height: 80px;
+}
+
+#header .center {
+    flex-grow: 1;
+}
+
+#header .right {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box .sign-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#header .right .box .sign-box p {
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+/* 드롭다운 메뉴 */
+.menu-item {
+    position: relative;
+}
+
+.menu-item .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #222222;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+}
+
+.menu-item:hover .dropdown {
+    display: block;
+}
+
+.menu-item .dropdown a {
+    color: #f04a00;
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    margin: 5px 0;
+}
+
+.menu-item .dropdown a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+#container {
+  margin-top: 120px;
+  text-align: center;
+}
+
+#moviename h1 {
+  color: #ff7518;
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+#moviename h1::after {
+  content: "";
+  display: block;
+  width: 60%;
+  height: 2px;
+  background-color: #ff7518;
+  margin: 10px auto 0;
+}
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15%;
+  margin: 20px auto;
+}
+
+#poster {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#poster .poster-image {
+  max-width: 400px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px gray;
+}
+
+#funding-info {
+  color: #fff;
+  font-size: 1.2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  background-color: #1c1c1c;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+#info {
+  flex-direction: column;
+}
+
+#info p {
+  font-weight: normal;
+  font-size: 1em;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+#info p .highlight {
+  font-weight: bold;
+  font-size: 1.3em;
+  color: #f04a00;
+}
+
+#info-bottom {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #444;
+  font-size: 0.9em;
+  color: #bbb;
+  opacity: 0.8;
+}
+
+#info-bottom dt,
+#info-bottom dd {
+  font-size: 0.9em;
+}
+
+#info-bottom dd {
+  font-weight: bold;
+}
+
+#funding-button {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #f04a00, #ff5722);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 220px;
+  height: 45px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+#funding-button:hover {
+  background: linear-gradient(135deg, #d03800, #e35d3c);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+#project-intro hr {
+  border: none;
+  height: 2px;
+  background-color: #444;
+  margin: 20px 0;
+}
+
+#project-intro h2 {
+  color: #f04a00;
+  text-align: center;
+  margin: 10px 0 20px;
+}
+
+#detail {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px;
+  background-color: #111;
+  position: relative;
+}
+
+/* 프로젝트 소개 정렬 */
+#story-content {
+  width: 65%;
+}
+
+#story-content h2 {
+  color: #f04a00;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+#story-content p {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.stillcut {
+  max-width: 45%;
+  height: auto;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+/* 펀딩박스 스타일 */
+#funding-box {
+  border-style: solid;
+  border-radius: 20px;
+
+  border-color: #000000;
+  position: sticky;
+  top: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 300px;
+  margin: 0 auto;
+  padding: 10px;
+  width: fit-content;
+  height: fit-content;
+}
+#funding-box h2 {
+  color: #f04a00;
+}
+/* 펀딩카드 스타일 */
+.funding-card {
+  background-color: #000000;
+  padding: 40px;
+  border-radius: 10px;
+  border: 3px solid #e35d3c;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 금액 강조 */
+.funding-card h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #f04a00;
+  margin-bottom: 5px;
+}
+
+/* 설명 텍스트 크기 */
+.funding-card p {
+  font-size: 0.75em;
+  color: #ffffff; /* 연한 회색 */
+}
+
+.funding-card ul {
+  font-size: 0.75em;
+  color: #ffffff;
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+/* Hover 효과 */
+.funding-card:hover {
+  background-color: #1a1a1a; /* 약간 밝은 검정 */
+}
+
+.funding-card ul li {
+}
+
+#story-content hr {
+  border: none;
+  height: 2px;
+  background-color: #444;
+  margin: 20px 0;
+}
+
+#story-content h2 {
+  color: #f04a00;
+  margin-bottom: 10px;
+}
+
+#bottom-info {
+  display: flex;
+  padding: 30px;
+  align-items: center;
+  background: #000;
+  color: #fff;
+}
+
+.left .developer h3,
+.left .developer p {
+  color: #fff;
+}
+
+.right .box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.site {
+  color: #f04a00;
+  font-weight: bold;
+}
