@@ -84,6 +84,7 @@
                         <p>장르: {{ movie.genre|join:', ' }}</p>
                         <p id="running_time">러닝타임: {{ movie.time}}분</p>
 
+
                         <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button" id="detail_button">상세 정보</a>
                     </div>
                 </div>
