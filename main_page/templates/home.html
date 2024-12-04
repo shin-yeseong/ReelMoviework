@@ -68,7 +68,7 @@
 
 <div id="box">
     {% for movie in movies %}
-    <a href="movieinfo.html" class="block">
+    <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="block">
         {% if movie.image_data %}
         <img src="data:image/jpeg;base64,{{ movie.image_data }}" alt="영화 포스터" class="poster-image">
         {% else %}
