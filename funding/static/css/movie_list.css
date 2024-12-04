@@ -1,0 +1,261 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Montserrat, Noto Sans KR, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+  #intro,
+  #box,
+  #bottom-info {
+    margin-top: 80px;
+  }
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    background-color: #000000;
+    border-bottom: 2px solid #f04a00;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+#header .logo img {
+      margin-top: 1%;
+
+    height: 80px;
+}
+
+#header .center {
+    flex-grow: 1;
+}
+
+#header .right {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box .sign-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#header .right .box .sign-box p {
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+/* 드롭다운 메뉴 */
+.menu-item {
+    position: relative;
+}
+
+.menu-item .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #222222;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+}
+
+.menu-item:hover .dropdown {
+    display: block;
+}
+
+.menu-item .dropdown a {
+    color: #f04a00;
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    margin: 5px 0;
+}
+
+.menu-item .dropdown a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+
+
+/* Main Section */
+#main {
+  padding: 100px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 28px;
+  color: #f04a00;
+  border-left: 5px solid #f04a00;
+  padding-left: 10px;
+}
+
+.sort-select {
+  background: #000;
+  color: #f04a00;
+  border: 1px solid #f04a00;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Movie Cards */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+
+}
+
+.movie-card {
+  background: #111;
+  border: 2px solid #f04a00;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.movie-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.movie-info h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #f04a00;
+}
+
+.movie-info p {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+#footer {
+  padding: 20px;
+  text-align: center;
+  background: #111;
+  border-top: 2px solid #f04a00;
+    margin-top: 5vh;
+}
+
+#footer p {
+
+  font-size: 14px;
+  color: #f04a00;
+
+}
+
+.movie-card {
+  width: 300px;
+  height: 400px;
+  perspective: 1000px;
+  position: relative;
+  cursor: pointer;
+}
+
+.movie-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.movie-card.flipped .movie-card-inner {
+  transform: rotateY(180deg);
+}
+
+.movie-card-front,
+.movie-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
+
+.movie-card-front {
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.movie-card-back {
+  background: #222;
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.movie-card-back .movie-info {
+  text-align: center;
+  color: #fff;
+}
+
+.movie-card-back .button {
+  background: #f04a00;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.movie-card-back .button:hover {
+  background: #ff7518;
+}
+
+
