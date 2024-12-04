@@ -253,12 +253,14 @@ def funding_payment_success(request):
     print("payment_success")
 
     movie_id = request.GET.get("movie_id")
-    title = request.GET.get("movie_title")
+    title = request.GET.get("title")
     amount = request.GET.get("amount")
     benefit = request.GET.get("benefit")
     order_id = request.GET.get("orderId")
     user_id = request.user.id  # 로그인된 사용자의 ID
     user_name = request.user.username  # 로그인된 사용자의 이름
+
+    print("title: ", title)
 
     context = {
         'movie_id': movie_id,
