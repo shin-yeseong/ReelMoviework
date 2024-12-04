@@ -12,18 +12,17 @@
         <ul>
             {% for movie in funded_movies %}
                 <li>
-                    <h2>{{ movie.title }}</h2>
-                    <p>Genre: {{ movie.genre|join:", " }}</p>
-                    <p>Time: {{ movie.time }} minutes</p>
-                    <p>Total Funding: {{ movie.total_funding_amount }}</p>
-                    <p>Funding Deadline: {{ movie.funding_deadline }}</p>
+                    <strong>Movie Title:</strong> {{ movie.movie_title }}<br>
+                    <strong>Order Name:</strong> {{ movie.order_name }}<br>
+                    <strong>Payment Type:</strong> {{ movie.payment_type }}<br>
+                    <strong>Amount:</strong> {{ movie.amount }}<br>
+                    <strong>Status:</strong> {{ movie.status }}<br>
+                    <strong>Order Date:</strong> {{ movie.order_date|date:"Y-m-d H:i:s" }}
                 </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>You haven't funded any movies yet.</p>
     {% endif %}
-
-    <a href="{% url 'mypage:mypage' %}">Back to My Page</a>
 </body>
 </html>
