@@ -139,7 +139,7 @@ body {
   max-width: 400px;
   height: auto;
   border-radius: 10px;
-  box-shadow: 2px 2px 5px gray;
+  box-shadow: 1px 1px 3px gray;
 }
 
 #funding-info {

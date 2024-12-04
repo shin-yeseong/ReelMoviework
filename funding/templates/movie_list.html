@@ -75,13 +75,17 @@
                 </div>
                 <!-- 카드 뒷면 -->
                 <div class="movie-card-back">
+                       <img src="{% url 'streaming:streaming_movie_poster' poster_id=movie.poster_image_id %}"
+                             alt="{{ movie.title }} Poster"
+                             class="background-poster">
                     <div class="movie-info">
                         <h2>{{ movie.title }}</h2>
                         <p>감독: {{ movie.creator }}</p>
                         <p>장르: {{ movie.genre|join:', ' }}</p>
-                        <p>러닝타임: {{ movie.time}}분</p>
+                        <p id="running_time">러닝타임: {{ movie.time}}분</p>
 
-                        <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button">View Details</a>
+
+                        <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button" id="detail_button">상세 정보</a>
                     </div>
                 </div>
             </div>

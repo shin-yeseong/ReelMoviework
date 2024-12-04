@@ -4,13 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Success</title>
+    <style>
+        /* 전역 스타일 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Montserrat, Noto Sans KR, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* 컨테이너 스타일 */
+        #success-container {
+            background: #111111;
+            border: 2px solid #f04a00;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 제목 스타일 */
+        h1 {
+            color: #f04a00;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* 텍스트 스타일 */
+        p {
+            margin: 10px 0;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .highlight {
+            color: #ff7518;
+            font-weight: bold;
+        }
+
+        /* 버튼 스타일 */
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #f04a00;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #ff7518;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
+
+            a {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>결제가 성공적으로 완료되었습니다!</h1>
-    <p>영화 제목: {{ title }}</p>
-    <p>결제 금액: {{ amount }}원</p>
-    <p>혜택: {{ benefit }}</p>
-    <p>주문 ID: {{ order_id }}</p>
-    <a href="{% url 'funding:movie_detail' movie_id=movie_id %}">영화 상세 페이지로 이동</a>
+    <div id="success-container">
+        <h1>결제 성공!</h1>
+        <p>영화 제목: <span class="highlight">{{ title }}</span></p>
+        <p>결제 금액: <span class="highlight">{{ amount }}원</span></p>
+        <p>혜택: <span class="highlight">{{ benefit }}</span></p>
+        <p>주문 ID: <span class="highlight">{{ order_id }}</span></p>
+        <p>사용자 이름: <span class="highlight">{{ user_name }}</span></p>
+        <a href="{% url 'funding:movie_detail' movie_id=movie_id %}">영화 상세 페이지로 이동</a>
+    </div>
 </body>
 </html>

@@ -273,17 +273,21 @@ body {
     color: #fff;
 }
 
+
 .movie-card-back .button {
-    background: #f04a00;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
+    background: #f04a00; /* 버튼 배경색 */
+    color: white; /* 버튼 글자색 */
+    padding: 10px 15px; /* 버튼 내부 여백 */
+    border-radius: 5px; /* 모서리를 둥글게 */
+    text-decoration: none; /* 밑줄 제거 */
+    font-size: 14px; /* 글자 크기 */
+    transition: background-color 0.3s, transform 0.2s; /* 색상과 크기 변화 애니메이션 */
 }
 
 
 .movie-card-back .button:hover {
-  background: #ff7518;
+    background: #ff7518; /* 호버 시 배경색 변경 */
+    transform: scale(1.05); /* 호버 시 살짝 확대 */
 }
 
 
