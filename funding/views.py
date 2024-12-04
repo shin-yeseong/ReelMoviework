@@ -252,13 +252,24 @@ def get_poster_image(request, poster_id):
 def funding_payment_success(request):
     print("payment_success")
 
-    movie_id = request.GET.get("movie_id")  # Extract movie_id from query parameters
-    title = request.GET.get("title")  # Extract title from query parameters
-    amount = request.GET.get("amount")  # Extract title from query parameters
-    benefit = request.GET.get("benefit")  # Extract title from query parameters
+    movie_id = request.GET.get("movie_id")
+    title = request.GET.get("movie_title")
+    amount = request.GET.get("amount")
+    benefit = request.GET.get("benefit")
     order_id = request.GET.get("orderId")
-    user_id = request.user.id  # Logged-in user's ID
-    user_name = request.user.username  # Logged-in user's username
+    user_id = request.user.id  # 로그인된 사용자의 ID
+    user_name = request.user.username  # 로그인된 사용자의 이름
+
+    context = {
+        'movie_id': movie_id,
+        'movie_title': title,
+        'amount': amount,
+        'benefit': benefit,
+        'order_id': order_id,
+        'user_id': user_id,
+        'user_name': user_name,
+    }
+    return render(request, 'funding_payment_success.html', context)
 
     if not movie_id or not title:
         return JsonResponse({"error": "Missing movie_id or title"}, status=400)
