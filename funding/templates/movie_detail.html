@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,160 +7,117 @@
     <title>Movie Details</title>
     <!-- 토스페이먼츠 결제창 SDK 추가 -->
     <script src="https://js.tosspayments.com/v1/payment"></script>
-    <style>
-        /* 기본 스타일 */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        }
-
-        h1 {
-            text-align: center;
-            color: #f04a00;
-        }
-
-        .detail-row {
-            margin-bottom: 15px;
-        }
-
-        .label {
-            font-weight: bold;
-        }
-
-        .poster-image {
-            display: block;
-            margin: 20px auto;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .funding-button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #f04a00;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .funding-button:hover {
-            background-color: #d03a00;
-        }
-    </style>
+<link rel="stylesheet" href="{% static 'css/movie_detail.css' %}">
 </head>
 <body>
-    <div class="container">
-        <h1>{{ movie.title }}</h1>
-
-        <!-- 포스터 이미지 -->
-        <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="poster-image">
-
-        <!-- 스틸컷 이미지 -->
-        <div class="detail-row"><span class="label">Still Cuts:</span></div>
-        <div class="still-cuts-container">
-            {% for still_cut_id in movie.still_cut_ids %}
-                <img src="{% url 'funding:get_poster_image' poster_id=still_cut_id %}" alt="Still Cut" class="poster-image">
-            {% endfor %}
-        </div>
-
-        <!-- 영화 상세 정보 -->
-        <div class="detail-row"><span class="label">Genre:</span> {{ movie.genre|join:", " }}</div>
-        <div class="detail-row"><span class="label">Time:</span> {{ movie.time }} minutes</div>
-        <div class="detail-row"><span class="label">Intention:</span> {{ movie.intention }}</div>
-        <div class="detail-row"><span class="label">Summary:</span> {{ movie.summary }}</div>
-        <div class="detail-row"><span class="label">Making Description:</span> {{ movie.making_description }}</div>
-        <div class="detail-row"><span class="label">Creator:</span> {{ movie.creator }}</div>
-        <div class="detail-row"><span class="label">후원 Target Funding:</span> ₩{{ movie.target_funding }}</div>
-        <div class="detail-row"><span class="label">후원된 Funding 금액:</span> ₩{{ movie.total_funding_amount }}</div>
-        <div class="detail-row"><span class="label">Funding Description:</span> {{ movie.funding_description }}</div>
-        <div class="detail-row"><span class="label">Funding Deadline:</span> {{ movie.funding_deadline }}</div>
-        <div class="detail-row"><span class="label">Created On:</span> {{ movie.create_date }}</div>
-
-        <!-- Funding Options -->
-        <div class="detail-row"><span class="label">Funding Options:</span></div>
-        <div>
-            {% for option in movie.funding_options %}
-                <button class="funding-button"
-                        onclick="startPayment('{{ option.amount }}', '{{ option.benefit }}', '{{ movie.f_id }}', '{{ movie.title }}')">
-                    ₩{{ option.amount }} - {{ option.benefit }}
-                </button>
-            {% endfor %}
+    <section id="main">
+        <div id="header">
+    <a href="{% url 'home' %}">
+                <div class="logo">
+                    <img src="{% static 'images/ReelVision.svg' %}" >
+                </div>
+            </a>
+            <div class="center"></div>
+           <div class="right">
+        <div class="box">
+            <div class="sign-box">
+                <div class="menu-item">
+                    <a href="{% url 'funding_movie_page' %}" class="main-link">REEL</a>
+                    <div class="dropdown">
+                        <a href="{% url 'funding:upload_funding_movie' %}">Upload Funding movie</a>
+                        <a href="{% url 'funding:movie_list' %}">Movie List</a>
+                    </div>
+                </div>
+                <p>|</p>
+                <div class="menu-item">
+                    <a href="{% url 'streaming_movie_page' %}" class="main-link">VISION</a>
+                    <div class="dropdown">
+                        <a href="{% url 'streaming:upload_streaming_movie' %}">Upload Streaming movie</a>
+                        <a href="{% url 'streaming:streaming_movie_list' %}">Movie List</a>
+                    </div>
+                </div>
+                <p>|</p>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'mypage:mypage' %}">MyPage</a>
+                    <p>|</p>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'signup' %}">SIGN-UP</a>
+                    <p>|</p>
+                    <a href="{% url 'signin' %}">SIGN-IN</a>
+                {% endif %}
+            </div>
         </div>
     </div>
+</div>
+
+        <div id="container">
+            <div id="moviename">
+                <h1>{{ movie.title }}</h1>
+            </div>
+            <div class="content">
+                <div id="poster">
+                    <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}" alt="Poster Image" class="poster-image">
+                </div>
+                <aside id="funding-info">
+                    <div id="info">
+                        <p>펀딩금액</p>
+                        <p><span class="highlight">₩{{ movie.total_funding_amount }}</span></p>
+                        <p>달성률</p>
+                        <p><span class="highlight">{{ funding_rate }}</span>%</p>
+                        <p>후원한 인원수</p>
+                        <p><span class="highlight">{{ backer_count }}</span>명</p>
+                    </div>
+                    <div id="info-bottom">
+                        <dt>목표금액</dt>
+                        <dd>₩{{ movie.target_funding }}</dd>
+                        <dt>펀딩 기간</dt>
+                        <dd>{{ movie.funding_deadline }}</dd>
+                    </div>
+                    <a href="#detail"><button id="funding-button">펀딩하기</button></a>
+                </aside>
+            </div>
+
+            <div id="detail">
+                <section id="story-content">
+                    <hr />
+                    <h2>| 프로젝트 소개</h2>
+                    {% for still_cut_id in movie.still_cut_ids %}
+                        <img src="{% url 'funding:get_poster_image' poster_id=still_cut_id %}" alt="Still Cut" class="stillcut">
+                    {% endfor %}
+                    <h2>| 줄거리</h2>
+                    <p>{{ movie.summary }}</p>
+
+                    <h2>| 등장인물</h2>
+                    <p>{{ movie.creator }}</p>
+                    <p>배우: {{ movie.actors|join:", " }}</p>
+
+                    <h2>| 펀딩계획</h2>
+                    <p>{{ movie.funding_description }}</p>
+
+                    <h2>| 감독의 말</h2>
+                    <p>{{ movie.creator_talk }}</p>
+                </section>
+
+                <div id="funding-box">
+                    <h2>Reel Vision!</h2>
+                    {% for option in movie.funding_options %}
+                        <div class="funding-card" onclick="startPayment('{{ option.amount }}', '{{ option.benefit }}', '{{ movie.f_id }}', '{{ movie.title }}')">
+                            <h2>₩{{ option.amount }}</h2>
+                            <p>{{ option.benefit }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
 
     <script>
-
         const clientKey = "test_ck_yZqmkKeP8g2yyW9Ez2DOrbQRxB9l";
         const tossPayments = TossPayments(clientKey);
 
-        function startFundingPayment(movieId, movieTitle, amount, benefit) {
-
-            tossPayments
-                .requestPayment("카드", {
-                    amount: amount,  // 결제 금액
-                    orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
-                    orderName: benefit,  // 영화 제목
-                    customerName: "{{ user.username }}",  // 사용자 이름
-                    successUrl: `${window.location.origin}/funding/payment/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${encodeURIComponent(benefit)}`,
-                     failUrl: `${window.location.origin}/funding/payment/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${encodeURIComponent(benefit)}`
-                })
-                .then(() => {
-                    // 결제 성공 후 서버로 POST 요청
-                    fetch('/funding/payment/success/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'  // Django CSRF 토큰
-                        },
-                        body: JSON.stringify({
-                            movie_id: movieId,
-                            title: movieTitle,
-                            amount: amount,
-                            order_name: benefit,
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message === "success") {
-                            alert("결제가 완료되었습니다!");
-                            window.location.href = `/funding/${movieId}/`;  // 영화로 이동
-                        } else {
-                            console.error("Payment saving failed:", data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error saving payment:", error);
-                        alert("결제 데이터를 저장하는 중 문제가 발생했습니다.");
-                    });
-                })
-                .catch(function (error) {
-                    alert('결제가 실패했습니다: ' + error.message);
-                });
-            }
-
         function startPayment(amount, benefit, movieId, movieTitle) {
             if (!movieId) {
-                console.error('movieId is missing');
                 alert('영화 ID가 올바르지 않습니다.');
                 return;
             }
@@ -167,34 +125,23 @@
             const isAuthenticated = '{{ request.user.is_authenticated }}' === 'True';
 
             if (isAuthenticated) {
-                fetch(`/funding/check_payment_status/${movieId}/${encodeURIComponent(benefit)}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to check payment status');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.already_paid) {
-                            // If payment is valid, redirect to the movie
-                            // alert("이미 결제가 완료되었습니다")
-                            alert("이미 후원한 기록이 있습니다. 추가 후원이 가능합니다.");
-                        }
-
-                        // Open the payment window regardless of funding record
-                        startFundingPayment(movieId, movieTitle, amount, benefit);
-
-                    })
-                    .catch(error => {
-                        console.error('Error checking payment:', error);
-                        alert('결제 확인 중 문제가 발생했습니다.');
-                    });
+                tossPayments.requestPayment("카드", {
+                    amount: amount,
+                    orderId: 'order_' + new Date().getTime(),
+                    orderName: benefit,
+                    customerName: "{{ request.user.username }}",
+                    successUrl: `${window.location.origin}/funding/payment/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}`,
+                    failUrl: `${window.location.origin}/funding/payment/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}`
+                }).then(() => {
+                    alert('결제가 완료되었습니다!');
+                }).catch(error => {
+                    alert('결제가 실패했습니다: ' + error.message);
+                });
             } else {
-                alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+                alert('로그인이 필요합니다.');
                 window.location.href = '/login-page/';
             }
         }
-
     </script>
 </body>
 </html>

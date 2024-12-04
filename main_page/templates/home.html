@@ -66,32 +66,23 @@
         <a href="펀딩페이지링크" class="add-funding-btn">+</a>
     </div>
 
-    <div id="box">
-        <a href="movieinfo.html" class="block">
-            <img src="{% static 'images/영화포스터1.jpeg' %}" alt="영화 포스터" class="poster-image">
-            <div class="info">
-                <h3 class="info-title">인터스텔라</h3>
-                <p class="info-description">간단한 줄거리: 우린 답을 찾을 것이다. 늘 그랬듯이.</p>
-                <p class="info-cast">등장인물: 매튜 맥커너히, 앤 해서웨이, 마이클 케인</p>
-            </div>
-        </a>
-        <a href="게시글링크" class="block">
-            <img src="{% static 'images/영화포스터2.jpg' %}" alt="영화 포스터" class="poster-image">
-            <div class="info">
-                <h3 class="info-title">베놈: 더 라스트 댄스</h3>
-                <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
-                <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
-            </div>
-        </a>
-        <a href="게시글링크" class="block">
-            <img src="{% static 'images/영화포스터3.jpg' %}" alt="영화 포스터" class="poster-image">
-            <div class="info">
-                <h3 class="info-title">어벤져스: 엔드게임</h3>
-                <p class="info-description">간단한 줄거리: 내용이 여기 들어갑니다.</p>
-                <p class="info-cast">등장인물: 배우1, 배우2, 배우3</p>
-            </div>
-        </a>
-    </div>
+<div id="box">
+    {% for movie in movies %}
+    <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="block">
+        {% if movie.image_data %}
+        <img src="data:image/jpeg;base64,{{ movie.image_data }}" alt="영화 포스터" class="poster-image">
+        {% else %}
+        <img src="{% static 'images/default-poster.jpg' %}" alt="기본 포스터" class="poster-image">
+        {% endif %}
+        <div class="info">
+            <h3 class="info-title">{{ movie.title }}</h3>
+            <p class="info-description">{{ movie.summary }}</p>
+            <p class="info-cast">등장인물: {{ movie.actors|join:", " }}</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
 </section>
 
 <footer id="footer">
