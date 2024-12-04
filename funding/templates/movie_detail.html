@@ -130,8 +130,8 @@
                     orderId: 'order_' + new Date().getTime(),
                     orderName: benefit,
                     customerName: "{{ request.user.username }}",
-                    successUrl: `${window.location.origin}/funding/payment/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}`,
-                    failUrl: `${window.location.origin}/funding/payment/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}`
+                    successUrl: `${window.location.origin}/funding/payment/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${benefit}`,
+                    failUrl: `${window.location.origin}/funding/payment/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}&amount=${amount}&benefit=${benefit}`
                 }).then(() => {
                     alert('결제가 완료되었습니다!');
                 }).catch(error => {
