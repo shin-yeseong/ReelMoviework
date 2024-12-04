@@ -28,7 +28,7 @@ body {
     height: 90px;
     background-color: #000000;
     border-bottom: 2px solid #f04a00;
-    z-index: 1000;
+    z-index: 10000;
     padding: 0 20px;
 }
 
@@ -197,7 +197,7 @@ body {
 
 .movie-card {
   width: 300px;
-  height: 400px;
+  height: 450px;
   perspective: 1000px;
   position: relative;
   cursor: pointer;
@@ -231,6 +231,15 @@ body {
   justify-content: center;
 }
 
+.movie-poster{
+     width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px gray;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
 .movie-card-back {
   background: #222;
   transform: rotateY(180deg);
@@ -243,6 +252,8 @@ body {
 .movie-card-back .movie-info {
   text-align: center;
   color: #fff;
+
+    margin-bottom: 20px;
 }
 
 .movie-card-back .button {
@@ -251,11 +262,15 @@ body {
   padding: 10px 15px;
   border-radius: 5px;
   text-decoration: none;
-  margin-top: 10px;
+
 }
 
 .movie-card-back .button:hover {
   background: #ff7518;
+}
+
+a#detail_button{
+     margin-top: 15px !important;
 }
 
 
