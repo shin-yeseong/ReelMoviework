@@ -180,6 +180,11 @@ body {
   margin-bottom: 5px;
 }
 
+#running_time{
+      margin-bottom: 30px;
+
+}
+
 #footer {
   padding: 20px;
   text-align: center;
@@ -241,36 +246,46 @@ body {
 }
 
 .movie-card-back {
-  background: #222;
-  transform: rotateY(180deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+    position: relative; /* 배경 이미지와 콘텐츠를 겹치게 */
+    background: #222;
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; /* 세로 방향 배치 */
+    overflow: hidden; /* 배경 이미지가 카드 경계를 넘지 않도록 */
 }
-
+.movie-card-back .background-poster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(10px); /* 흐림 효과 */
+    opacity: 0.5; /* 투명도 */
+    z-index: 1; /* 콘텐츠 뒤로 배치 */
+}
 .movie-card-back .movie-info {
-  text-align: center;
-  color: #fff;
-
-    margin-bottom: 20px;
+    position: relative; /* 배경 위에 콘텐츠 배치 */
+    z-index: 2; /* 배경 이미지보다 위로 배치 */
+    text-align: center;
+    color: #fff;
 }
 
 .movie-card-back .button {
-  background: #f04a00;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 5px;
-  text-decoration: none;
-
+    background: #f04a00;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
 }
+
 
 .movie-card-back .button:hover {
   background: #ff7518;
 }
 
-a#detail_button{
-     margin-top: 15px !important;
-}
+
 
 
