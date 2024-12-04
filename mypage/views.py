@@ -60,80 +60,104 @@ def ensure_django_user(request_user):
 
 @login_required
 def my_projects(request):
-    """
-    내가 등록한 프로젝트 보기.
-    """
-    user = ensure_django_user(request.user)
-    if user is None:
-        return redirect('signin')  # 유효한 사용자 객체가 없으면 로그인 페이지로 리디렉션
+    user = request.user
+    if not isinstance(user, MongoDBUser):
+        messages.error(request, '로그인 정보가 잘못되었습니다.')
+        return redirect('signin')
 
-    # MongoDB에서 현재 사용자가 등록한 프로젝트 검색
-    user_projects = list(collection.find({"creator_id": str(user.id)}))
-
-    return render(request, 'mypage/my_projects.html', {'user_projects': user_projects})
+    try:
+        user_projects = list(users_collection.find({
+            "creator_id": str(user.id)
+        }))
+        return render(request, 'mypage/my_projects.html', {'user_projects': user_projects})
+    except Exception as e:
+        print(f"[DEBUG] 등록한 프로젝트 가져오기 오류: {e}")
+        messages.error(request, '등록한 프로젝트 데이터를 가져오는 중 문제가 발생했습니다.')
+        return redirect('mypage:mypage')
 
 
 @login_required
 def funded_movies(request):
-    """
-    사용자가 후원한 영화 목록 보기.
-    """
-    user = ensure_django_user(request.user)
-    if user is None:
+    user = request.user  # Middleware에서 가져온 MongoDBUser
+    if not isinstance(user, MongoDBUser):
+        messages.error(request, '로그인 정보가 잘못되었습니다.')
         return redirect('signin')
 
-    # MongoDB에서 현재 사용자가 후원한 영화 검색
-    funded_movies = list(collection.find({"backers": {"$elemMatch": {"user_id": str(user.id)}}}))
-
-    return render(request, 'mypage/funded_movies.html', {'funded_movies': funded_movies})
-
+    try:
+        funded_movies = list(users_collection.find({
+            "user_id": str(user.id),  # user.id를 문자열로 변환
+            "status": "success"
+        }))
+        return render(request, 'mypage/funded_movies.html', {'funded_movies': funded_movies})
+    except Exception as e:
+        print(f"[DEBUG] 후원한 영화 가져오기 오류: {e}")
+        messages.error(request, '후원한 영화 데이터를 가져오는 중 문제가 발생했습니다.')
+        return redirect('mypage:mypage')
 
 @login_required
 def purchased_movies(request):
-    """
-    사용자가 구매한 영화 목록을 가져오고 페이징 처리.
-    """
-    user = ensure_django_user(request.user)
-    if user is None:
+    user = request.user
+    if not isinstance(user, MongoDBUser):
+        messages.error(request, '로그인 정보가 잘못되었습니다.')
         return redirect('signin')
 
-    # 로그인한 사용자가 구매한 영화 목록 필터링
-    purchased_movies = StreamingMovie.objects.filter(viewers=user).only('title', 'genre', 'time')
+    try:
+        streaming_movies = list(users_collection.find({
+            "user_id": str(user.id),  # user.id를 문자열로 변환
+            "status": "success"
+        }))
+        return render(request, 'mypage/purchased_movies.html', {'movies': streaming_movies})
+    except Exception as e:
+        print(f"[DEBUG] 구매한 영화 가져오기 오류: {e}")
+        messages.error(request, '구매한 영화 데이터를 가져오는 중 문제가 발생했습니다.')
+        return redirect('mypage:mypage')
 
-    # Paginator 적용: 페이지당 10개 영화
-    paginator = Paginator(purchased_movies, 10)
-    page_number = request.GET.get('page')  # 현재 페이지 번호
-    page_movies = paginator.get_page(page_number)  # 해당 페이지의 영화들 가져오기
+from pymongo import MongoClient
+from mongodbconnect.settings import client
 
-    return render(request, 'mypage/purchased_movies.html', {'movies': page_movies})
-
+# MongoDB 컬렉션 설정
+db = client['mongodatabase']
+funding_order_collection = db['funding_order']  # 후원 주문 컬렉션
+streaming_orders_collection = db['streaming_order']  # 스트리밍 주문 컬렉션
+funding_movie_collection = db['funding_fundingmovie']  # 후원 영화 컬렉션
+streaming_movie_collection = db['streaming_streamingmovie']  # 스트리밍 영화 컬렉션
 
 @login_required
 def mypage(request):
-    user_id = request.session.get('user_id')
-    print("세션에서 가져온 user_id:", user_id)
+    user_id = str(request.user.id)  # 현재 로그인한 사용자의 ID
+    print(f"[DEBUG] 세션에서 가져온 user_id: {user_id}")
 
-    if not user_id:
-        return render(request, 'mypage/mypage.html', {'error': 'No user ID in session'})
-
+    # 후원 영화 데이터 가져오기
     try:
-        user_data = users_collection.find_one({"_id": user_id})  # ObjectId 제거
-        if not user_data:
-            print(f"사용자를 찾을 수 없습니다. user_id: {user_id}")
-            return render(request, 'mypage/mypage.html', {'error': 'User not found in MongoDB'})
-
-        # 데이터 변환
-        if 'last_login' in user_data:
-            user_data['last_login'] = user_data['last_login'].strftime('%Y-%m-%d %H:%M:%S')
-        if 'date_joined' in user_data:
-            user_data['date_joined'] = user_data['date_joined'].strftime('%Y-%m-%d %H:%M:%S')
-
-        print("MongoDB에서 가져온 사용자 데이터:", user_data)
-        return render(request, 'mypage/mypage.html', {'user': user_data})
+        funded_movies = list(funding_order_collection.find({"user_id": user_id, "status": "success"}))
+        print(f"[DEBUG] 후원 영화 데이터: {funded_movies}")
     except Exception as e:
-        print(f"Error fetching user data: {e}")
-        return render(request, 'mypage/mypage.html', {'error': 'An error occurred while fetching user data'})
+        print(f"[ERROR] 후원 영화 데이터 가져오기 실패: {e}")
+        funded_movies = []
 
+    # 구매 영화 데이터 가져오기
+    try:
+        purchased_movies = list(streaming_orders_collection.find({"user_id": user_id, "status": "success"}))
+        print(f"[DEBUG] 구매 영화 데이터: {purchased_movies}")
+    except Exception as e:
+        print(f"[ERROR] 구매 영화 데이터 가져오기 실패: {e}")
+        purchased_movies = []
+
+    # 내가 등록한 프로젝트 데이터 가져오기
+    try:
+        my_projects = list(funding_movie_collection.find({"creator_id": user_id}))
+        print(f"[DEBUG] 등록한 프로젝트 데이터: {my_projects}")
+    except Exception as e:
+        print(f"[ERROR] 등록한 프로젝트 데이터 가져오기 실패: {e}")
+        my_projects = []
+
+    # 템플릿에 데이터 전달
+    return render(request, 'mypage/mypage.html', {
+        'user': request.user,
+        'funded_movies': funded_movies,
+        'purchased_movies': purchased_movies,
+        'my_projects': my_projects,
+    })
 
 from bson import ObjectId
 from django.contrib import messages

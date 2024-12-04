@@ -1,184 +1,121 @@
-<!DOCTYPE html>
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Uploaded Movies</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #141414;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            margin: 0;
-        }
-
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .movie-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .movie-card {
-            width: 300px;
-            height: 500px;
-            perspective: 1000px;
-            margin: 20px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease;
-            z-index: 1;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .movie-card-inner {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-
-        .movie-card.flipped .movie-card-inner {
-            transform: scale(1.3) rotateY(180deg) scaleX(-1);
-        }
-
-        .movie-card-front, .movie-card-back {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            backface-visibility: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
-        .movie-card-front {
-            background-color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            padding: 20px;
-        }
-
-        .poster-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .movie-card-back {
-            background-color: #555;
-            color: #fff;
-            transform: rotateY(180deg) scaleX(-1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            font-size: 1em;
-            position: relative;
-        }
-
-        .background-poster {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.2;
-            object-fit: cover;
-            z-index: -1;
-            border-radius: 8px;
-        }
-
-        .button {
-            padding: 10px 20px;
-            background-color: #ff7518;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .button:hover {
-            background-color: #f04a00;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReelVision - Movie List</title>
+    <link rel="stylesheet" href="{% static 'css/movie_list.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+<section id="main">
+    <div id="header">
+        <a href="{% url 'home' %}">
+            <div class="logo">
+                <img src="{% static 'images/ReelVision.svg' %}" >
+            </div>
+        </a>
 
-    <h1>Uploaded Movies</h1>
-    <div class="movie-container">
-        {% if movies %}
-            {% for movie in movies %}
-                <div class="movie-card" onclick="toggleCard(this)">
-                    <div class="movie-card-inner">
-                        <!-- 카드 앞면 -->
-                        <div class="movie-card-front">
-                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
-                                 alt="{{ movie.title }} Poster"
-                                 class="poster-image">
-                        </div>
-                        <!-- 카드 뒷면 -->
-                        <div class="movie-card-back">
-                            <img src="{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}"
-                                 alt="{{ movie.title }} Poster"
-                                 class="background-poster">
-                            <div>
-                                <h2>{{ movie.title }}</h2>
-                                <p><strong>Creator:</strong> {{ movie.creator }}</p>
-                                <p><strong>Running Time:</strong> {{ movie.time }}분</p>
-
-                            </div>
-                            <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button">View Details</a>
+        <div class="center"></div>
+        <div class="right">
+            <div class="box">
+                <div class="sign-box">
+                    <div class="menu-item">
+                        <a href="{% url 'funding_movie_page' %}" class="main-link">REEL</a>
+                        <div class="dropdown">
+                            <a href="{% url 'funding:upload_funding_movie' %}">Upload Funding movie</a>
+                            <a href="{% url 'funding:movie_list' %}">Movie List</a>
                         </div>
                     </div>
+                    <p>|</p>
+                    <div class="menu-item">
+                        <a href="{% url 'streaming_movie_page' %}" class="main-link">VISION</a>
+                        <div class="dropdown">
+                            <a href="{% url 'streaming:upload_streaming_movie' %}">Upload Streaming movie</a>
+                            <a href="{% url 'streaming:streaming_movie_list' %}">Movie List</a>
+                        </div>
+                    </div>
+                    <p>|</p>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'mypage:mypage' %}">MyPage</a>
+                        <p>|</p>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'signup' %}">SIGN-UP</a>
+                        <p>|</p>
+                        <a href="{% url 'signin' %}">SIGN-IN</a>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No movies uploaded yet.</p>
-        {% endif %}
+            </div>
+        </div>
     </div>
 
-    <script>
-        let selectedMovieCard = null;
+    <!-- Main Content -->
+    <main id="main">
+        <section class="main-header">
+            <h1 class="section-title">Funding Movie</h1>
+            <select name="list" class="sort-select">
+                <option value="1">작성일자순</option>
+                <option value="2">마감일자순</option>
+            </select>
+        </section>
 
-        function toggleCard(cardElement) {
-            if (selectedMovieCard && selectedMovieCard !== cardElement) {
-                selectedMovieCard.classList.remove('flipped');
-                selectedMovieCard.style.zIndex = 1;
-            }
-            cardElement.classList.toggle('flipped');
-            selectedMovieCard = cardElement.classList.contains('flipped') ? cardElement : null;
-            if (selectedMovieCard) {
-                selectedMovieCard.style.zIndex = 1000;
-            } else {
-                cardElement.style.zIndex = 1;
-            }
+        <section class="movie-grid">
+            {% if movies %}
+        {% for movie in movies %}
+        <div class="movie-card" onclick="toggleCard(this)">
+            <div class="movie-card-inner">
+                <!-- 카드 앞면 -->
+                <div class="movie-card-front">
+                    <img
+                        src="{% if movie.poster_image_id %}{% url 'funding:get_poster_image' poster_id=movie.poster_image_id %}{% else %}{% static 'images/default-poster.jpg' %}{% endif %}"
+                        alt="{{ movie.title }} Poster"
+                        class="movie-poster">
+                </div>
+                <!-- 카드 뒷면 -->
+                <div class="movie-card-back">
+                    <div class="movie-info">
+                        <h2>{{ movie.title }}</h2>
+                        <p>감독: {{ movie.creator }}</p>
+                        <p>장르: {{ movie.genre|join:', ' }}</p>
+                        <p>러닝타임: {{ movie.time}}분</p>
+
+                        <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="button">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>현재 업로드된 영화가 없습니다.</p>
+    {% endif %}
+        </section>
+    </main>
+</section>
+    <footer id="footer">
+        <div class="footer-content">
+            <p>© 2024 ReelVision | OSSProj | Team 2</p>
+        </div>
+    </footer>
+
+<script>
+    let selectedCard = null;
+
+    function toggleCard(cardElement) {
+        if (selectedCard && selectedCard !== cardElement) {
+            selectedCard.classList.remove("flipped");
+            selectedCard.style.zIndex = 1;
         }
-    </script>
+        cardElement.classList.toggle("flipped");
+        selectedCard = cardElement.classList.contains("flipped") ? cardElement : null;
+        if (selectedCard) {
+            selectedCard.style.zIndex = 1000;
+        } else {
+            cardElement.style.zIndex = 1;
+        }
+    }
+</script>
 
 </body>
 </html>

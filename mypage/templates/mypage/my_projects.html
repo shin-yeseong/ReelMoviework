@@ -6,35 +6,25 @@
     <title>My Projects</title>
 </head>
 <body>
-    <h1>My Projects</h1>
+    <h1>My Registered Projects</h1>
 
-    {% if user_projects %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Total Funding Amount</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for project in user_projects %}
-                    <tr>
-                        <td>{{ project.title }}</td>
-                        <td>{{ project.status }}</td>
-                        <td>{{ project.total_funding_amount }}</td>
-                        <td>
-                            <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if my_projects %}
+        <ul>
+            {% for project in my_projects %}
+                <li>
+                    <strong>Title:</strong> {{ project.title }}<br>
+                    <strong>Genre:</strong> {{ project.genre|join:", " }}<br>
+                    <strong>Duration:</strong> {{ project.time }} minutes<br>
+                    <strong>Status:</strong> {{ project.status }}<br>
+                    <strong>Funding Goal:</strong> {{ project.target_funding }}<br>
+                    <strong>Current Funding:</strong> {{ project.total_funding_amount }}<br>
+                    <strong>Funding Deadline:</strong> {{ project.funding_deadline|date:"Y-m-d" }}<br>
+                    <a href="{% url 'funding:funding_detail' project.f_id %}">View Details</a>
+                </li>
+            {% endfor %}
+        </ul>
     {% else %}
-        <p>You have not registered any projects yet.</p>
+        <p>You haven't registered any projects yet.</p>
     {% endif %}
-
-    <a href="{% url 'mypage:mypage' %}">Back to My Page</a>
 </body>
 </html>
