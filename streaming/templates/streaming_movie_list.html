@@ -7,6 +7,7 @@
     <title>ReelVision - Movie List</title>
     <link rel="stylesheet" href="{% static 'css/streaming_movie_list.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://js.tosspayments.com/v1/payment"></script>
 </head>
 <body>
 <section id="main">
@@ -124,87 +125,95 @@
     }
 
       const clientKey = "test_ck_yZqmkKeP8g2yyW9Ez2DOrbQRxB9l";
-            const tossPayments = TossPayments(clientKey);
+      const tossPayments = TossPayments(clientKey);
 
-        function startStreamingPayment(movieId, movieTitle, amount) {
+      function startStreamingPayment(movieId, movieTitle, amount) {
+        tossPayments
+          .requestPayment("카드", {
+            amount: amount, // 결제 금액
+            orderId: "order_" + new Date().getTime(), // 고유 주문 번호 생성
+            orderName: movieTitle, // 영화 제목
+            customerName: "{{ user.username }}", // 사용자 이름
+            successUrl: `${
+              window.location.origin
+            }/streaming/success?movie_id=${movieId}&title=${encodeURIComponent(
+              movieTitle
+            )}`,
+            failUrl: `${
+              window.location.origin
+            }/streaming/fail?movie_id=${movieId}&title=${encodeURIComponent(
+              movieTitle
+            )}`,
+          })
+          .then(() => {
+            // 결제 성공 후 서버로 POST 요청
+            fetch("/streaming/success/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}", // Django CSRF 토큰
+              },
+              body: JSON.stringify({
+                movie_id: movieId,
+                title: movieTitle,
+                amount: amount,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.message === "success") {
+                  alert("결제가 완료되었습니다!");
+                  window.location.href = `/streaming/movie/${movieId}/`; // 영화로 이동
+                } else {
+                  console.error("Payment saving failed:", data.error);
+                }
+              })
+              .catch((error) => {
+                console.error("Error saving payment:", error);
+                alert("결제 데이터를 저장하는 중 문제가 발생했습니다.");
+              });
+          })
+          .catch(function (error) {
+            alert("결제가 실패했습니다: " + error.message);
+          });
+      }
 
-            tossPayments
-                .requestPayment("카드", {
-                    amount: amount,  // 결제 금액
-                    orderId: 'order_' + new Date().getTime(),  // 고유 주문 번호 생성
-                    orderName: movieTitle,  // 영화 제목
-                    customerName: "{{ user.username }}",  // 사용자 이름
-                    successUrl: `${window.location.origin}/streaming/success?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}`,
-                     failUrl: `${window.location.origin}/streaming/fail?movie_id=${movieId}&title=${encodeURIComponent(movieTitle)}`
-                })
-                .then(() => {
-                    // 결제 성공 후 서버로 POST 요청
-                    fetch('/streaming/success/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': '{{ csrf_token }}'  // Django CSRF 토큰
-                        },
-                        body: JSON.stringify({
-                            movie_id: movieId,
-                            title: movieTitle,
-                            amount: amount
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message === "success") {
-                            alert("결제가 완료되었습니다!");
-                            window.location.href = `/streaming/movie/${movieId}/`;  // 영화로 이동
-                        } else {
-                            console.error("Payment saving failed:", data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error saving payment:", error);
-                        alert("결제 데이터를 저장하는 중 문제가 발생했습니다.");
-                    });
-                })
-                .catch(function (error) {
-                    alert('결제가 실패했습니다: ' + error.message);
-                });
-            }
-
-        function playOrPay(movieId, movieTitle) {
-            if (!movieId) {
-                console.error('movieId is missing');
-                alert('영화 ID가 올바르지 않습니다.');
-                return;
-            }
-
-            const isAuthenticated = '{{ request.user.is_authenticated }}' === 'True';
-
-            if (isAuthenticated) {
-                fetch(`/streaming/check_payment_status/${movieId}/`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to check payment status');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.can_watch) {
-                            // If payment is valid, redirect to the movie
-                            window.location.href = `/streaming/movie/${movieId}/`;
-                        } else {
-                            // Otherwise, open the payment window
-                            startStreamingPayment(movieId, movieTitle, 1000);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking payment:', error);
-                        alert('결제 확인 중 문제가 발생했습니다.');
-                    });
-            } else {
-                alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
-                window.location.href = '/login-page/';
-            }
+      function playOrPay(movieId, movieTitle) {
+        if (!movieId) {
+          console.error("movieId is missing");
+          alert("영화 ID가 올바르지 않습니다.");
+          return;
         }
+
+        const isAuthenticated =
+          "{{ request.user.is_authenticated }}" === "True";
+
+        if (isAuthenticated) {
+          fetch(`/streaming/check_payment_status/${movieId}/`)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to check payment status");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.can_watch) {
+                // If payment is valid, redirect to the movie
+                window.location.href = `/streaming/movie/${movieId}/`;
+              } else {
+                // Otherwise, open the payment window
+                startStreamingPayment(movieId, movieTitle, 1000);
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking payment:", error);
+              alert("결제 확인 중 문제가 발생했습니다.");
+            });
+        } else {
+          alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+          window.location.href = "/login-page/";
+        }
+      }
 </script>
 
 </body>
