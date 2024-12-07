@@ -33,7 +33,7 @@
                 </div>
                 <p>|</p>
                 <div class="menu-item">
-                    <a href="{% url 'streaming_movie_page' %}" class="main-link">VISION</a>
+                    <a href="{% url 'streaming:streaming_home' %}" class="main-link">VISION</a>
                     <div class="dropdown">
                         <a href="{% url 'streaming:upload_streaming_movie' %}">Upload Streaming movie</a>
                         <a href="{% url 'streaming:streaming_movie_list' %}">Movie List</a>
@@ -59,12 +59,12 @@
          <img src="{% static 'images/background.jpg' %}" alt="Background" class="background-image">
         <div class="banner-text">
             <h1>Vision:</h1>
-            <p>과거와 현재를 잇는 영화의 여정을 보다.</p>
+            <p>이전에서 현재까지 비전을 보다.</p>
             <a href="/archive" id="archive-button">Show Archive</a>
         </div>
     </div>
 
-    <div class="box-title">스트리밍중인 작품
+    <div class="box-title">추천 작품
         <a href="스트리밍페이지링크" class="add-funding-btn">+</a>
     </div>
 
@@ -79,7 +79,6 @@
         <div class="info">
             <h3 class="info-title">{{ movie.title }}</h3>
             <p class="info-description">{{ movie.summary }}</p>
-            <p class="info-cast">등장인물: {{ movie.actors|join:", " }}</p>
         </div>
     </a>
     {% endfor %}

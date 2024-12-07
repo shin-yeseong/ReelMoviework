@@ -1,5 +1,7 @@
 # streaming/views.py
 import json
+import random
+from base64 import b64encode
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden
@@ -140,6 +142,44 @@ def streaming_movie_list(request):
     # MongoDB에서 모든 영화 정보를 가져옵니다.
     movies = list(collection.find())
     return render(request, 'streaming_movie_list.html', {'movies': movies})
+
+
+def streaming_home(request):
+    try:
+        # MongoDB 데이터 확인
+        all_movies = list(collection.find())
+
+        if not all_movies:
+            return render(request, 'streaming_home.html', {'movies': []})
+
+        # 랜덤 영화 선택
+        random_movies = random.sample(all_movies, min(3, len(all_movies)))
+
+        # 포스터 처리
+        movies_with_posters = []
+        for movie in random_movies:
+            poster_id = movie.get("poster_image_id")
+            image_data = None
+
+            if poster_id:
+                try:
+                    poster_file = streaming_poster_fs.get(ObjectId(poster_id))
+                    image_data = b64encode(poster_file.read()).decode('utf-8')
+                except Exception:
+                    pass
+
+            movies_with_posters.append({
+                "s_id": movie.get("s_id"),
+                "title": movie.get("title"),
+                "summary": movie.get("summary", "No summary available"),
+                "actors": movie.get("actors", []),
+                "image_data": image_data,
+            })
+
+        return render(request, 'streaming_home.html', {'movies': movies_with_posters})
+    except Exception:
+        return render(request, 'streaming_home.html', {'movies': []})
+
 
 @login_required(login_url='signin')
 def streaming_movie_detail(request, movie_id):
