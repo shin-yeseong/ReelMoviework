@@ -87,14 +87,16 @@ WSGI_APPLICATION = 'mongodbconnect.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'mongodatabase',
-            'ENFORCE_SCHEMA': False,
-            'CLIENT': {
-                'host': 'mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority&appName=LikeMovie'
-            }
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'mongodatabase',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://jklas187:PI9IWptT59WMOYZF@likemovie.toohv.mongodb.net/?retryWrites=true&w=majority&appName=LikeMovie',
+            'ssl': True,
+            'tls': True
         }
+    }
 }
 
 
