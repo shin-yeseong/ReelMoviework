@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReelVision</title>
+    <title>Vision:</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-xxx" crossorigin="anonymous">
 
@@ -59,13 +59,13 @@
          <img src="{% static 'images/background.jpg' %}" alt="Background" class="background-image">
         <div class="banner-text">
             <h1>Vision:</h1>
-            <p>이전에서 현재까지 비전을 보다.</p>
-            <a href="/archive" id="archive-button">Show Archive</a>
+            <p>과거에서 현재까지, 비전을 보다.</p>
+            <a href="{% url 'streaming:streaming_home' %}" id="archive-button">Upload Movie</a>
         </div>
     </div>
 
     <div class="box-title">추천 작품
-        <a href="스트리밍페이지링크" class="add-funding-btn">+</a>
+        <a href="{% url 'streaming:streaming_movie_list' %}" class="add-funding-btn">+</a>
     </div>
 
 <div id="box">

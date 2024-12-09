@@ -60,12 +60,12 @@
         <div class="banner-text">
             <h1>ReelVision:</h1>
             <p>그들의 비전을 필름으로, 영화로 만들다.</p>
-            <a href="/archive" id="archive-button">Show Archive</a>
+            <a href="{% url 'streaming:streaming_movie_list' %}" id="archive-button">Show Archive</a>
         </div>
     </div>
 
     <div class="box-title">펀딩중인 작품
-        <a href="펀딩페이지링크" class="add-funding-btn">+</a>
+        <a href="{% url 'funding:movie_list' %}" class="add-funding-btn">+</a>
     </div>
 
 <div id="box">

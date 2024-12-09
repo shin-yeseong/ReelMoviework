@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReelVision</title>
+    <title>Reel:</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-xxx" crossorigin="anonymous">
 
@@ -58,14 +58,14 @@
     <div id="intro">
          <img src="{% static 'images/background.jpg' %}" alt="Background" class="background-image">
         <div class="banner-text">
-            <h1>REEL:</h1>
+            <h1>Reel:</h1>
             <p>미래를 위한 필름을 감다.</p>
-            <a href="/archive" id="archive-button">Show Archive</a>
+            <a href="{% url 'funding:upload_funding_movie' %}" id="archive-button">Upload Movie</a>
         </div>
     </div>
 
     <div class="box-title">추천 작품
-        <a href="스트리밍페이지링크" class="add-funding-btn">+</a>
+        <a href="{% url 'funding:movie_list' %}" class="add-funding-btn">+</a>
     </div>
 
 <div id="box">

@@ -1,0 +1,343 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Montserrat, Noto Sans KR, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+  #intro,
+  #box,
+  #bottom-info {
+    margin-top: 80px;
+  }
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    background-color: #000000;
+    border-bottom: 2px solid #f04a00;
+    z-index: 1000;
+    padding: 0 20px;
+}
+
+#header .logo img {
+      margin-top: 5%;
+
+    height: 80px;
+}
+
+#header .center {
+    flex-grow: 1;
+}
+
+#header .right {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box {
+    display: flex;
+    align-items: center;
+}
+
+#header .right .box .sign-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#header .right .box .sign-box p {
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #f04a00;
+}
+
+#header .right .box .sign-box a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+/* 드롭다운 메뉴 */
+.menu-item {
+    position: relative;
+}
+
+.menu-item .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #222222;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+}
+
+.menu-item:hover .dropdown {
+    display: block;
+}
+
+.menu-item .dropdown a {
+    color: #f04a00;
+    text-decoration: none;
+    font-size: 13px;
+    display: block;
+    margin: 5px 0;
+}
+
+.menu-item .dropdown a:hover {
+    color: #ff7518;
+    text-decoration: underline;
+}
+
+
+
+  #intro {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    color: #ff7518;
+    text-align: center;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    font: 0.75em Montserrat, Noto Sans KR, sans-serif;
+    background: #000000;
+      margin-top: 12vh;
+  }
+
+.background-image {
+   position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 요소를 완전히 채우도록 설정 */
+    z-index: 1;
+    opacity: 0.5; /* 톤 다운 효과 */
+}
+  #intro::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    z-index: 1;
+
+  }
+
+  .banner-text {
+    position: relative;
+    z-index: 2;
+    animation: fadeInUp 2.5s ease forwards;
+  }
+
+  .banner-text h1 {
+    font-size: 5em;
+    font-weight: 700;
+    margin: 0.2em 0;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1.5s ease forwards 0.3s;
+  }
+
+  .banner-text p {
+    font-size: 2em;
+    margin-top: 1.5em;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1.5s ease forwards 0.6s;
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  #archive-button {
+    display: inline-block;
+    margin-top: 2.5em;
+    padding: 0.5em 1.5em;
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #ff7518;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    z-index: 2;
+  }
+
+  #archive-button:hover {
+    background-color: #ff5722;
+  }
+  .box-title {
+    background: #000000;
+    margin: 0 60px;
+    border-bottom: 2px solid #ff7518;
+    font-size: 40px;
+    color: #f04a00;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .add-funding-btn {
+    font-size: 50px;
+    color: #f04a00;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .add-funding-btn:hover {
+    color: #ff7518;
+  }
+
+  #box {
+    background: #000000;
+    display: flex;
+    margin: 25px 60px 50px;
+    height: 700px;
+    justify-content: space-between;
+  }
+
+  #box .block {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #000000;
+    overflow: hidden;
+    border: 3px solid #f04a00;
+    border-radius: 10px;
+  }
+
+  #box .block .bt {
+    line-height: 30px;
+    border-radius: 10px 10px 0 0;
+    background: #f04a00;
+    color: #ffffff;
+    width: 150px;
+    height: 30px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  #box .block .bt:hover {
+    color: #f04a00;
+    text-decoration: underline;
+
+  }
+
+  #box .block .poster-image {
+    width: 100%;
+    height: 500px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px gray;
+    object-fit: contain;
+    transition: filter 0.3s ease;
+}
+
+  #box .block .poster-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px gray;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+  }
+
+  #box .block:hover .poster-image {
+    filter: blur(4px) brightness(0.6);
+  }
+
+  #box .block .info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  #box .block:hover .info {
+    opacity: 1;
+  }
+
+  #box .block .info-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  #box .block .info-description {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  #box .block .info-cast {
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  #box .block .poster-image {
+    width: 100%;
+    height: 600px;
+    border-radius: 7px;
+    box-shadow: 2px 2px 5px gray;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+  }
+
+  #footer {
+    padding: 20px;
+    text-align: center;
+    background: #111;
+    border-top: 2px solid #f04a00;
+  }
+
+  #footer p {
+    font-size: 14px;
+    color: #f04a00;
+  }
