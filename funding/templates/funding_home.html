@@ -58,19 +58,19 @@
     <div id="intro">
          <img src="{% static 'images/background.jpg' %}" alt="Background" class="background-image">
         <div class="banner-text">
-            <h1>ReelVision:</h1>
-            <p>그들의 비전을 필름으로, 영화로 만들다.</p>
+            <h1>REEL:</h1>
+            <p>미래를 위한 필름을 감다.</p>
             <a href="/archive" id="archive-button">Show Archive</a>
         </div>
     </div>
 
-    <div class="box-title">펀딩중인 작품
-        <a href="펀딩페이지링크" class="add-funding-btn">+</a>
+    <div class="box-title">추천 작품
+        <a href="스트리밍페이지링크" class="add-funding-btn">+</a>
     </div>
 
 <div id="box">
     {% for movie in movies %}
-    <a href="{% url 'funding:movie_detail' movie_id=movie.f_id %}" class="block">
+    <div class="block">
         {% if movie.image_data %}
         <img src="data:image/jpeg;base64,{{ movie.image_data }}" alt="영화 포스터" class="poster-image">
         {% else %}
@@ -79,9 +79,8 @@
         <div class="info">
             <h3 class="info-title">{{ movie.title }}</h3>
             <p class="info-description">{{ movie.summary }}</p>
-            <p class="info-cast">등장인물: {{ movie.actors|join:", " }}</p>
         </div>
-    </a>
+    </div>
     {% endfor %}
 </div>
 

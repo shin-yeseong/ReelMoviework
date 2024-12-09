@@ -13,4 +13,5 @@ urlpatterns = [
     path('payment/success/', views.funding_payment_success, name='funding_success'),
     path('payment/fail/', views.funding_payment_fail, name='funding_fail'),
     path('check_payment_status/<str:movie_id>/<str:order_name>/', views.check_payment_status, name='check_payment_status'),
+    path('funding/funding_home/', views.funding_home, name='funding_home'),
 ]

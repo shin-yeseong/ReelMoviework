@@ -1,9 +1,15 @@
 # funding/views.py
+import base64
+import random
+from base64 import b64encode
 from logging import exception
 from bson import ObjectId
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, time
+
+from gridfs import NoFile
+
 from mongodbconnect.settings import client
 from .models import FundingMovie
 from .forms import FundingMovieForm
@@ -361,3 +367,38 @@ def check_payment_status(request, movie_id, order_name):
     else:
         logger.info(f"결제 기록 없음 - user_id: {user_id}, movie_id: {movie_id}, order_name: {order_name}")
         return JsonResponse({"already_paid": False})  # 결제 필요 상태 반환
+
+def funding_home(request):
+    try:
+        # MongoDB 데이터 확인
+        all_movies = list(collection.find())
+
+        if not all_movies:
+            return render(request, 'funding_home.html', {'movies': []})
+
+        random_movies = random.sample(all_movies, min(3, len(all_movies)))
+
+        # 포스터 처리
+        movies_with_posters = []
+        for movie in random_movies:
+            poster_id = movie.get("poster_image_id")
+            image_data = None
+
+            if poster_id:
+                try:
+                    poster_file = poster_fs.get(ObjectId(poster_id))
+                    image_data = b64encode(poster_file.read()).decode('utf-8')
+                except Exception:
+                    pass
+
+            movies_with_posters.append({
+                "f_id": movie.get("f_id"),
+                "title": movie.get("title"),
+                "summary": movie.get("summary", "No summary available"),
+                "actors": movie.get("actors", []),
+                "image_data": image_data,
+            })
+
+        return render(request, 'funding_home.html', {'movies': movies_with_posters})
+    except Exception:
+        return render(request, 'funding_home.html', {'movies': []})
