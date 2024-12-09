@@ -31,6 +31,10 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
+        #form{
+            width: 100%;
+
+        }
         h1 {
             text-align: center;
             margin-bottom: 20px;
@@ -52,6 +56,7 @@
             border: none;
             border-radius: 5px;
             font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
         }
 
         input[type="checkbox"] {
@@ -59,13 +64,17 @@
             margin-right: 5px;
         }
 
-        button {
-            background-color: #ff7518;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-        }
+      button {
+    width: 100%; /* 모든 버튼의 너비를 100%로 설정 */
+    background-color: #ff7518;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
 
         button:hover {
             background-color: #f04a00;
@@ -139,7 +148,7 @@
 <body>
     <div class="container">
         <h1>Upload Movie Project</h1>
-        <form action="{% url 'funding:upload_funding_movie' %}" method="POST" enctype="multipart/form-data">
+        <form id="form" action="{% url 'funding:upload_funding_movie' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
@@ -220,7 +229,7 @@
             <label for="still_cuts">Upload Still Cuts:</label>
             <input type="file" id="still_cuts" name="still_cuts" accept="image/*" multiple>
 
-            <button type="submit">LET'S REEL!</button>s
+            <button type="submit">LET'S REEL!</button>
         </form>
     </div>
 </body>
