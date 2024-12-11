@@ -269,16 +269,6 @@ def funding_payment_success(request):
 
     print("title: ", title)
 
-    context = {
-        'movie_id': movie_id,
-        'movie_title': title,
-        'amount': amount,
-        'benefit': benefit,
-        'order_id': order_id,
-        'user_id': user_id,
-        'user_name': user_name,
-    }
-    return render(request, 'funding_payment_success.html', context)
 
     if not movie_id or not title:
         return JsonResponse({"error": "Missing movie_id or title"}, status=400)
@@ -317,13 +307,16 @@ def funding_payment_success(request):
         return JsonResponse({"error": "Failed to update funding details"}, status=500)
 
     # 결제 완료 처리
-    return render(request, 'funding_payment_success.html', {
+    context = {
         'movie_id': movie_id,
-        'title': title,
+        'movie_title': title,
         'amount': amount,
         'benefit': benefit,
         'order_id': order_id,
-    })
+        'user_id': user_id,
+        'user_name': user_name,
+    }
+    return render(request, 'funding_payment_success.html', context)
 
 @csrf_exempt
 def funding_payment_fail(request):
