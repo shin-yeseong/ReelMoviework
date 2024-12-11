@@ -24,7 +24,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import logging
 from django.views.decorators.csrf import csrf_exempt
-
+import hmac
+import hashlib
 # MongoDB 클라이언트 및 GridFS 설정
 # MongoDB 클라이언트 및 데이터베이스 설정
 client_mongo = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
@@ -402,3 +403,65 @@ def funding_home(request):
         return render(request, 'funding_home.html', {'movies': movies_with_posters})
     except Exception:
         return render(request, 'funding_home.html', {'movies': []})
+
+@csrf_exempt
+def funding_webhook(request):
+    if request.method == "POST":
+        try:
+            # JSON 데이터 파싱
+            payload = json.loads(request.body)
+
+            # 필수 데이터 추출
+            event_type = payload.get("eventType")  # 예: payment.confirm
+            payment_key = payload.get("data", {}).get("paymentKey")
+            order_id = payload.get("data", {}).get("orderId")
+            amount = payload.get("data", {}).get("amount")
+            status = payload.get("data", {}).get("status")  # 예: DONE
+
+            # 서명 검증 (보안을 위해 필요)
+            secret_key = "test_sk_DpexMgkW36RKKkgXJvgw3GbR5ozO"  # 토스페이먼츠 시크릿 키
+            signature = request.headers.get("Toss-Signature")
+
+            # 시그니처 검증 함수
+            def verify_signature(payload, secret_key, signature):
+                computed_signature = hmac.new(
+                    secret_key.encode("utf-8"),
+                    payload.encode("utf-8"),
+                    hashlib.sha256
+                ).hexdigest()
+                return hmac.compare_digest(signature, computed_signature)
+
+            # 서명이 유효하지 않은 경우
+            if not verify_signature(request.body.decode("utf-8"), secret_key, signature):
+                return JsonResponse({"error": "Invalid signature"}, status=400)
+
+            # 결제 완료 처리
+            if event_type == "payment.confirm" and status == "DONE":
+                # MongoDB에서 order_id로 주문 업데이트 또는 펀딩 목표금액 업데이트
+                funding_order_collection.update_one(
+                    {"order_id": order_id},
+                    {"$set": {
+                        "status": "success",
+                        "payment_key": payment_key,
+                        "updated_at": datetime.now()
+                    }}
+                )
+
+                # 펀딩 목표 금액 업데이트 (예시)
+                funding_movie = db['funding_fundingmovies'].find_one({"order_id": order_id})
+                if funding_movie:
+                    new_total = funding_movie.get("total_funding_amount", 0) + amount
+                    db['funding_movies'].update_one(
+                        {"_id": funding_movie["_id"]},
+                        {"$set": {"total_funding_amount": new_total}}
+                    )
+
+                return JsonResponse({"message": "Payment confirmed and updated"}, status=200)
+
+            return JsonResponse({"message": "Webhook received"}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)

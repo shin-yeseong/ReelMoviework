@@ -137,7 +137,7 @@ def signup(request):
         temporary_users_collection.insert_one(user_data)
 
         # 이메일로 인증 링크 전송
-        verification_link = f"http://127.0.0.1:8000{reverse('verify_email', args=[token])}"
+        verification_link = f"http://54.252.232.89:8000/{reverse('verify_email', args=[token])}"
         subject = 'Please verify your email'
         message = f"Click the link to verify your email: {verification_link}"
         send_mail(subject, message, 'from@example.com', [email])

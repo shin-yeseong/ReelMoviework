@@ -14,4 +14,5 @@ urlpatterns = [
     path('payment/fail/', views.funding_payment_fail, name='funding_fail'),
     path('check_payment_status/<str:movie_id>/<str:order_name>/', views.check_payment_status, name='check_payment_status'),
     path('funding/funding_home/', views.funding_home, name='funding_home'),
+    path('webhook/', views.funding_webhook, name='funding_webhook'),  # 웹훅 엔드포인트
 ]
